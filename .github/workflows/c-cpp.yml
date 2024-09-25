@@ -9,122 +9,70 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      - name: Checkout del repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Configura l'ambiente di compilazione
-        run: |
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            choco install mingw -y
-            export PATH="/c/MinGW/bin:$PATH"
-          else
-            sudo apt-get update
-            sudo apt-get install -y g++
-          fi
+      - name: Install CMake (Linux/MacOS)
+        if: runner.os != 'Windows'
+        run: sudo apt-get install cmake -y || brew install cmake
 
-      - name: Compila main.cpp in ogni sottodirectory
+      - name: Setup environment
         run: |
-          for dir in */ ; do
-            if [ -f "$dir/main.cpp" ]; then
-              cd "$dir"
-              if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-                g++ main.cpp -o "${dir%/}-windows.exe"
-              elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-                g++ main.cpp -o "${dir%/}-linux"
-              elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-                g++ main.cpp -o "${dir%/}-macos"
-              fi
-              cd ..
+          mkdir -p build
+          for dir in */; do
+            if [[ -f "$dir/main.cpp" ]]; then
+              echo "Found $dir"
+              mkdir -p build/$dir
             fi
           done
 
-      - name: Crea file zip per ogni progetto
+      - name: Build projects
+        if: runner.os != 'Windows'
         run: |
-          for dir in */ ; do
-            if [ -f "$dir/main.cpp" ]; then
-              if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-                zip -r "${dir%/}-windows.zip" "$dir/${dir%/}-windows.exe"
-              elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-                zip -r "${dir%/}-linux.zip" "$dir/${dir%/}-linux"
-              elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-                zip -r "${dir%/}-macos.zip" "$dir/${dir%/}-macos"
-              fi
+          for dir in */; do
+            if [[ -f "$dir/main.cpp" ]]; then
+              echo "Compiling $dir"
+              g++ "$dir/main.cpp" -o "build/$dir/${{ matrix.os }}-$(basename $dir)"
             fi
           done
+        shell: bash
 
-      - name: Carica gli artefatti
-        uses: actions/upload-artifact@v3
-        with:
-          name: binaries-${{ matrix.os }}
-          path: "*.zip"
+      - name: Build projects (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          mkdir build
+          for /d %%G in (*) do (
+            if exist "%%G\main.cpp" (
+              echo Compiling %%G
+              cl "%%G\main.cpp" /Fe:build\%%G\${{ matrix.os }}-%%G.exe
+            )
+          )
+        shell: cmd
 
   release:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout del repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Scarica gli artefatti
-        uses: actions/download-artifact@v3
-        with:
-          name: binaries-ubuntu-latest
-          path: artifacts/ubuntu
-      
-      - name: Scarica gli artefatti per macOS
-        uses: actions/download-artifact@v3
-        with:
-          name: binaries-macos-latest
-          path: artifacts/macos
+      - name: Gather built executables
+        run: |
+          mkdir -p release
+          for dir in build/*; do
+            zip -j "release/$(basename $dir).zip" "$dir"/*
+          done
 
-      - name: Scarica gli artefatti per Windows
-        uses: actions/download-artifact@v3
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: binaries-windows-latest
-          path: artifacts/windows
-
-      - name: Crea la release
-        id: create_release
-        uses: actions/create-release@v1
+          files: release/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-
-      - name: Carica gli asset della release per Ubuntu
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/ubuntu/*.zip
-          asset_name: binaries-ubuntu.zip
-          asset_content_type: application/zip
-
-      - name: Carica gli asset della release per macOS
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/macos/*.zip
-          asset_name: binaries-macos.zip
-          asset_content_type: application/zip
-
-      - name: Carica gli asset della release per Windows
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/windows/*.zip
-          asset_name: binaries-windows.zip
-          asset_content_type: application/zip
