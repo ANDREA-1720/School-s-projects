@@ -80,7 +80,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: binaries
+          name: binaries-${{ matrix.os }}
           path: build/**/*
 
   release:
@@ -94,7 +94,6 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: binaries
           path: build
 
       - name: Ottieni la data corrente
@@ -104,8 +103,13 @@ jobs:
       - name: Gather built executables
         run: |
           mkdir -p release
-          for dir in build/*; do
-            zip -j "release/$(basename $dir).zip" "$dir"/*
+          for os_dir in build/*; do
+            os_name=$(basename "$os_dir")
+            for dir in "$os_dir"/*; do
+              if [ -d "$dir" ]; then
+                zip -j "release/$(basename $dir)-$os_name.zip" "$dir"/*
+              fi
+            done
           done
 
       - name: Create Release
