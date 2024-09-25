@@ -28,7 +28,7 @@ jobs:
           mkdir -p build
           for dir in */; do
             if [[ -f "$dir/main.cpp" ]]; then
-              echo "Found $dir"
+              echo "Trovato $dir"
               mkdir -p build/$dir
             fi
           done
@@ -39,18 +39,24 @@ jobs:
           mkdir build
           Get-ChildItem -Directory | ForEach-Object {
             if (Test-Path "$($_.FullName)\main.cpp") {
-              echo "Found $($_.Name)"
+              echo "Trovato $($_.Name)"
               mkdir "build\$($_.Name)"
             }
           }
         shell: pwsh
+
+      - name: Setup Ambiente MSVC (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
 
       - name: Build projects (Linux/MacOS)
         if: runner.os != 'Windows'
         run: |
           for dir in */; do
             if [[ -f "$dir/main.cpp" ]]; then
-              echo "Compiling $dir"
+              echo "Compilando $dir"
               g++ "$dir/main.cpp" -o "build/$dir/${{ matrix.os }}-$(basename $dir)"
             fi
           done
@@ -61,7 +67,7 @@ jobs:
         run: |
           Get-ChildItem -Directory | ForEach-Object {
             if (Test-Path "$($_.FullName)\main.cpp") {
-              echo "Compiling $($_.Name)"
+              echo "Compilando $($_.Name)"
               cl "$($_.FullName)\main.cpp" /Fe:"build\$($_.Name)\${{ matrix.os }}-$($_.Name).exe"
             }
           }
@@ -75,6 +81,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Ottieni la data corrente
+        id: get_date
+        run: echo "DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+
       - name: Gather built executables
         run: |
           mkdir -p release
@@ -86,5 +96,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: release/*.zip
+          release_name: "${{ env.DATE }}-Perciabcosco"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
