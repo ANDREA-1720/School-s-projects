@@ -69,14 +69,15 @@ jobs:
       - name: Build projects (Windows)
         if: runner.os == 'Windows'
         run: |
-          Get-ChildItem -Directory | ForEach-Object {
-            if (Test-Path "$($_.FullName)\main.cpp") {
-              echo "Compilando $($_.Name)"
-              cl.exe /EHsc "$($_.FullName)\main.cpp" /Fe:"build\$($_.Name)\${{ matrix.os }}-$($_.Name).exe"
-            }
-          }
+          for /d %%i in (*) do (
+          if exist "%%i\main.cpp" (
+              echo Compilando %%i
+              cl.exe /EHsc "%%i\main.cpp" /Fe:"build\%%i\${{ matrix.os }}-%%i.exe"
+            )
+          )
         shell: cmd
 
+       
   release:
     needs: build
     runs-on: ubuntu-latest
