@@ -51,6 +51,9 @@ jobs:
         with:
           vs-version: '[16.0,)'
 
+      - name: Setup Developer Command Prompt (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Build projects (Linux/MacOS)
         if: runner.os != 'Windows'
@@ -69,10 +72,10 @@ jobs:
           Get-ChildItem -Directory | ForEach-Object {
             if (Test-Path "$($_.FullName)\main.cpp") {
               echo "Compilando $($_.Name)"
-              cl "$($_.FullName)\main.cpp" /Fe:"build\$($_.Name)\${{ matrix.os }}-$($_.Name).exe"
+              cl.exe /EHsc "$($_.FullName)\main.cpp" /Fe:"build\$($_.Name)\${{ matrix.os }}-$($_.Name).exe"
             }
           }
-        shell: pwsh
+        shell: cmd
 
   release:
     needs: build
