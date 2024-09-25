@@ -1,0 +1,129 @@
+name: Build e Rilascia
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout del repository
+        uses: actions/checkout@v3
+
+      - name: Configura l'ambiente di compilazione
+        run: |
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            choco install mingw -y
+            export PATH="/c/MinGW/bin:$PATH"
+          else
+            sudo apt-get update
+            sudo apt-get install -y g++
+          fi
+
+      - name: Compila main.cpp in ogni sottodirectory
+        run: |
+          for dir in */ ; do
+            if [ -f "$dir/main.cpp" ]; then
+              cd "$dir"
+              if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+                g++ main.cpp -o "${dir%/}-windows.exe"
+              elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+                g++ main.cpp -o "${dir%/}-linux"
+              elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+                g++ main.cpp -o "${dir%/}-macos"
+              fi
+              cd ..
+            fi
+          done
+
+      - name: Crea file zip per ogni progetto
+        run: |
+          for dir in */ ; do
+            if [ -f "$dir/main.cpp" ]; then
+              if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+                zip -r "${dir%/}-windows.zip" "$dir/${dir%/}-windows.exe"
+              elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+                zip -r "${dir%/}-linux.zip" "$dir/${dir%/}-linux"
+              elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+                zip -r "${dir%/}-macos.zip" "$dir/${dir%/}-macos"
+              fi
+            fi
+          done
+
+      - name: Carica gli artefatti
+        uses: actions/upload-artifact@v3
+        with:
+          name: binaries-${{ matrix.os }}
+          path: "*.zip"
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repository
+        uses: actions/checkout@v3
+
+      - name: Scarica gli artefatti
+        uses: actions/download-artifact@v3
+        with:
+          name: binaries-ubuntu-latest
+          path: artifacts/ubuntu
+      
+      - name: Scarica gli artefatti per macOS
+        uses: actions/download-artifact@v3
+        with:
+          name: binaries-macos-latest
+          path: artifacts/macos
+
+      - name: Scarica gli artefatti per Windows
+        uses: actions/download-artifact@v3
+        with:
+          name: binaries-windows-latest
+          path: artifacts/windows
+
+      - name: Crea la release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Carica gli asset della release per Ubuntu
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/ubuntu/*.zip
+          asset_name: binaries-ubuntu.zip
+          asset_content_type: application/zip
+
+      - name: Carica gli asset della release per macOS
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/macos/*.zip
+          asset_name: binaries-macos.zip
+          asset_content_type: application/zip
+
+      - name: Carica gli asset della release per Windows
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/windows/*.zip
+          asset_name: binaries-windows.zip
+          asset_content_type: application/zip
