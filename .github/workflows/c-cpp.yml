@@ -47,9 +47,10 @@ jobs:
 
       - name: Setup Ambiente MSVC (Windows)
         if: runner.os == 'Windows'
-        shell: cmd
-        run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+        uses: microsoft/setup-msbuild@v1.0.2
+        with:
+          vs-version: '[16.0,)'
+
 
       - name: Build projects (Linux/MacOS)
         if: runner.os != 'Windows'
