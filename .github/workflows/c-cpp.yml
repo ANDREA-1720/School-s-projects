@@ -86,6 +86,8 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -120,5 +122,3 @@ jobs:
           tag_name: "${{ env.DATE }}-Perciabcosco"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        permissions:
-          contents: write
