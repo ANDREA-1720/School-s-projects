@@ -116,6 +116,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: release/*.zip
-          release_name: "${{ env.DATE }}-Perciabcosco"
+          name: "${{ env.DATE }}-Perciabcosco"
+          tag_name: "${{ env.DATE }}-Perciabcosco"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
