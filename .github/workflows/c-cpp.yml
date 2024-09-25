@@ -22,7 +22,8 @@ jobs:
         if: runner.os != 'Windows'
         run: sudo apt-get install cmake -y || brew install cmake
 
-      - name: Setup environment
+      - name: Setup environment (Linux/MacOS)
+        if: runner.os != 'Windows'
         run: |
           mkdir -p build
           for dir in */; do
@@ -32,7 +33,19 @@ jobs:
             fi
           done
 
-      - name: Build projects
+      - name: Setup environment (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          mkdir build
+          Get-ChildItem -Directory | ForEach-Object {
+            if (Test-Path "$($_.FullName)\main.cpp") {
+              echo "Found $($_.Name)"
+              mkdir "build\$($_.Name)"
+            }
+          }
+        shell: pwsh
+
+      - name: Build projects (Linux/MacOS)
         if: runner.os != 'Windows'
         run: |
           for dir in */; do
@@ -46,14 +59,13 @@ jobs:
       - name: Build projects (Windows)
         if: runner.os == 'Windows'
         run: |
-          mkdir build
-          for /d %%G in (*) do (
-            if exist "%%G\main.cpp" (
-              echo Compiling %%G
-              cl "%%G\main.cpp" /Fe:build\%%G\${{ matrix.os }}-%%G.exe
-            )
-          )
-        shell: cmd
+          Get-ChildItem -Directory | ForEach-Object {
+            if (Test-Path "$($_.FullName)\main.cpp") {
+              echo "Compiling $($_.Name)"
+              cl "$($_.FullName)\main.cpp" /Fe:"build\$($_.Name)\${{ matrix.os }}-$($_.Name).exe"
+            }
+          }
+        shell: pwsh
 
   release:
     needs: build
