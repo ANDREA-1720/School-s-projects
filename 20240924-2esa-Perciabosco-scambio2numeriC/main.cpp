@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 2ESA
-    Descrizione: 20240924-2esa-Perciabosco-scambio2numeriS
+    Descrizione: 20240924-2esa-Perciabosco-scambio2numeriC
 */
 
 #include <iostream>
