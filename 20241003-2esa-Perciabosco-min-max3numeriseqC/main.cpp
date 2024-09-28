@@ -36,7 +36,7 @@ int main()
     num2 = num2 - num1;
 
     // comunicazione dei risultati output
-    cout << "I numeri in ordine crescente sono: " << num1 << " " << num2 << " " << num3 << endl;
+    cout << "I numeri in ordine crescente sono: " << num1 << ", " << num2 << ", " << num3 << endl;
 
     return 0;
 }
