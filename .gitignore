@@ -2,5 +2,7 @@
 **/build/
 
 # Ignora file inutili di MacOS
-
 **/.DS_Store
+
+# Ignora configurazione VSCODE
+.vscode
