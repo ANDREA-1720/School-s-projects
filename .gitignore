@@ -1,2 +1,6 @@
 # Ignora tutte le directory di build e il loro contenuto
 **/build/
+
+# Ignora file inutili di MacOS
+
+**/.DS_Store
