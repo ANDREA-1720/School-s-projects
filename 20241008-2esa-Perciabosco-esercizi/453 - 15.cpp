@@ -23,4 +23,5 @@ int main()
         cout << "L'area del quadrato è: " << area << ", mentre il perimetro è: " << perimetro << "." << endl;
     else
         cout << "L'area del rettangolo è: " << area << ", mentre il perimetro è: " << perimetro << "." << endl;
+    return 0;
 }

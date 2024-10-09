@@ -22,4 +22,5 @@ int main()
         cout << "(" << num1 << ", " << num2 << ", " << num3 << ") è una terna è pitagorica." << endl;
     else
         cout << "(" << num1 << ", " << num2 << ", " << num3 << ") NON è una terna è pitagorica." << endl;
+    return 0;
 }

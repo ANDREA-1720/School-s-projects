@@ -50,4 +50,5 @@ int main()
     num2 = num2 - num1;
 
     cout << "I numeri in ordine crescente sono: " << num1 << ", " << num2 << ", " << num3 << ", " << num4 << "." << endl;
+    return 0;
 }
