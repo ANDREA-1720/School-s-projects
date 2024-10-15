@@ -8,6 +8,8 @@ namespace fs = std::filesystem;
 int main()
 {
     string projectName;
+    const string gray = "\\033[90m";
+    const string reset = "\\033[0m";
 
     // Richiedi l'input per il nome del progetto
     cout << "Inserisci il nome del progetto: ";
@@ -97,30 +99,30 @@ int main()
 
         scriptFile << "# Fase di build\n";
         scriptFile << "if [ \"$noBuild\" = false ]; then\n";
-        scriptFile << "  echo \"Compilazione...\"\n";
+        scriptFile << "  echo \"" << gray << "Compilazione..." << reset << "\"\n";
         scriptFile << "  g++ main.cpp -o build/main -std=c++17 \n";
         scriptFile << "  if [ $? -ne 0 ]; then\n";
-        scriptFile << "    echo \"Errore nella compilazione.\"\n";
+        scriptFile << "    echo \"" << gray << "Errore nella compilazione." << reset << "\"\n";
         scriptFile << "    exit 1\n";
         scriptFile << "  fi\n";
-        scriptFile << "  echo \"Compilazione completata.\"\n";
+        scriptFile << "  echo \"" << gray << "Compilazione completata." << reset << "\"\n";
         scriptFile << "fi\n\n";
 
         scriptFile << "# Fase di esecuzione\n";
         scriptFile << "if [ \"$noRun\" = false ]; then\n";
-        scriptFile << "  echo \"Esecuzione...\"\n";
+        scriptFile << "  echo \"" << gray << "Esecuzione..." << reset << "\"\n";
         scriptFile << "  ./build/main\n";
         scriptFile << "  if [ $? -ne 0 ]; then\n";
-        scriptFile << "    echo \"Errore durante l'esecuzione.\"\n";
+        scriptFile << "    echo \"" << gray << "Errore durante l'esecuzione." << reset << "\"\n";
         scriptFile << "    exit 1\n";
         scriptFile << "  fi\n";
-        scriptFile << "  echo \"Esecuzione completata.\"\n";
+        scriptFile << "  echo \"" << gray << "Esecuzione completata." << reset << "\"\n";
         scriptFile << "fi\n";
 
         scriptFile.close();
 
         // Rendi lo script eseguibile
-        fs::permissions(scriptFilePath, fs::perms::owner_exec | fs::perms::owner_read);
+        fs::permissions(scriptFilePath, fs::perms::owner_exec | fs::perms::owner_read | fs::perms::owner_write);
 
         cout << "Script execute.sh creato con successo." << endl;
     }

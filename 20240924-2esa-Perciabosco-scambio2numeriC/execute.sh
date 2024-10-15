@@ -18,22 +18,22 @@ done
 
 # Fase di build
 if [ "$noBuild" = false ]; then
-  echo "Compilazione..."
-  g++ main.cpp -o build/main
+  echo "\033[90mCompilazione...\033[0m"
+  g++ main.cpp -o build/main -std=c++17 
   if [ $? -ne 0 ]; then
-    echo "Errore nella compilazione."
+    echo "\033[90mErrore nella compilazione.\033[0m"
     exit 1
   fi
-  echo "Compilazione completata."
+  echo "\033[90mCompilazione completata.\033[0m"
 fi
 
 # Fase di esecuzione
 if [ "$noRun" = false ]; then
-  echo "Esecuzione..."
+  echo "\033[90mEsecuzione...\033[0m"
   ./build/main
   if [ $? -ne 0 ]; then
-    echo "Errore durante l'esecuzione."
+    echo "\033[90mErrore durante l'esecuzione.\033[0m"
     exit 1
   fi
-  echo "Esecuzione completata."
+  echo "\033[90mEsecuzione completata.\033[0m"
 fi
