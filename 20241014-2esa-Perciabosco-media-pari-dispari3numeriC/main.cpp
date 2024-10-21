@@ -61,7 +61,7 @@ int main()
 
     if (contaPari > 0)
     {
-        cout << "La media dei numeri pari è: " << sommaPari / contaPari << endl;
+        cout << "La media dei numeri pari è: " << sommaPari / contaPari << "." << endl;
     }
     else
     {
@@ -70,7 +70,7 @@ int main()
 
     if (contaDispari > 0)
     {
-        cout << "La media dei numeri dispari è: " << sommaDispari / contaDispari << endl;
+        cout << "La media dei numeri dispari è: " << sommaDispari / contaDispari << "." << endl;
     }
     else
     {
