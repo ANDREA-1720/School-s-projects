@@ -61,7 +61,7 @@ jobs:
           for dir in */; do
             if [[ -f "$dir/main.cpp" ]]; then
               echo "Compilando $dir"
-              g++ "$dir/main.cpp" -o "build/$dir/${{ matrix.os }}-$(basename $dir) -std=c++17"
+              g++ "$dir/main.cpp" -o "build/$dir/${{ matrix.os }}-$(basename $dir)" -std=c++17"
             fi
           done
         shell: bash
