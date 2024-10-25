@@ -27,9 +27,9 @@ int main()
     // elaborazione
 	if(coeffA == 0){
 		if(coeffC - coeffB == 0){
-			cout << "L'equazione è indeterminata" << endl;
+			cout << "L'equazione è indeterminata." << endl;
 		} else{
-			cout << "L'equazione è impossibile" << endl;
+			cout << "L'equazione è impossibile." << endl;
 		}
 	return 0;
 	}
