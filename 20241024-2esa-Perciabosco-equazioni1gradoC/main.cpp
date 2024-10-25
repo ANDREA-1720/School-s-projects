@@ -6,8 +6,6 @@
 
 #include <iostream>
 #include <math.h>
-#include <string>
-#include <algorithm>
 
 using namespace std;
 
@@ -37,7 +35,7 @@ int main()
 	}
 
     // comunicazione dei risultati output
-    cout << "La soluzione dell'equazione è: x = " << coeffA / (coeefC - coeffB) << "." << endl;
+    cout << "La soluzione dell'equazione è: x = " << coeffA / (coeffC - coeffB) << "." << endl;
 
     return 0;
 }
