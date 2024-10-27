@@ -21,7 +21,7 @@ int main()
     cin >> coeffA;
     cout << "Inserisci il coefficente B: ";
     cin >> coeffB;
-	cout << "Inserisci il coefficente C: ";
+    cout << "Inserisci il coefficente C: ";
     cin >> coeffC;
 
     // elaborazione
