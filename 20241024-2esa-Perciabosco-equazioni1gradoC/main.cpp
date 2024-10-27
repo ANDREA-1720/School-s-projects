@@ -15,8 +15,8 @@ int main()
     double coeffA, coeffB, coeffC;
 
     // acquisizione input
-	cout << "Ax+B=C" << endl;
-	cout << endl;
+    cout << "Ax+B=C" << endl;
+    cout << endl;
     cout << "Inserisci il coefficente A: ";
     cin >> coeffA;
     cout << "Inserisci il coefficente B: ";
