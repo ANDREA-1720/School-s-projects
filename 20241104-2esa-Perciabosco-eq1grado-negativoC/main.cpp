@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 2ESA
-    Descrizione: "20241125-2esa-Perciabosco-eq1gradoC"
+    Descrizione: "20241104-2esa-Perciabosco-eq1grado-negativoC"
 */
 
 #include <iostream>
