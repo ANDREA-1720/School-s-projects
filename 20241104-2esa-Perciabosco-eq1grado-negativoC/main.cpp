@@ -27,7 +27,7 @@ int main()
     // elaborazione
     if (coeffA != 0)
     {
-        cout << "La soluzione dell'equazione è: x = " << coeffA / (coeffC - coeffB) << "." << endl;
+        cout << "La soluzione dell'equazione è: x = " << (coeffC - coeffB) / coeffA << "." << endl;
 
         return 0;
     }
