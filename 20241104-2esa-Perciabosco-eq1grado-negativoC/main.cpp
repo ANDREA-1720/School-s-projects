@@ -25,21 +25,20 @@ int main()
     cin >> coeffC;
 
     // elaborazione
-    if (coeffA == 0)
+    if (coeffA != 0)
     {
-        if (coeffC - coeffB != 0)
-        {
-            cout << "L'equazione è impossibile." << endl;
-        }
-        else
-        {
-            cout << "L'equazione è indeterminata." << endl;
-        }
+        cout << "La soluzione dell'equazione è: x = " << coeffA / (coeffC - coeffB) << "." << endl;
+
         return 0;
     }
 
-    // comunicazione dei risultati output
-    cout << "La soluzione dell'equazione è: x = " << coeffA / (coeffC - coeffB) << "." << endl;
-
+    if (coeffC - coeffB != 0)
+    {
+        cout << "L'equazione è impossibile." << endl;
+    }
+    else
+    {
+        cout << "L'equazione è indeterminata." << endl;
+    }
     return 0;
 }
