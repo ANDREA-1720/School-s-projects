@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 2ESA
-    Descrizione: "20241111-2esa-Perciabosco-terna-pitagorica"
+    Descrizione: "20241111-2esa-Perciabosco-terna-pitagoricaC"
 */
 
 #include <iostream>
