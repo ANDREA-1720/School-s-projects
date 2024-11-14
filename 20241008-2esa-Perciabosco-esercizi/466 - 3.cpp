@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 2ESA
-    Descrizione: "Dati 3 numeri, indica se si tratta di una terna pitagorica"
+    Descrizione: "20241111-2esa-Perciabosco-terna-pitagorica"
 */
 
 #include <iostream>
@@ -18,7 +18,7 @@ int main()
     cout << "Inserisci il terzo numero: ";
     cin >> num3;
 
-    if ((num1 * num1) + (num2 * num2) == num3 * num3)
+    if (((num1 * num1) + (num2 * num2) == num3 * num3) || (num2 * num2) + (num3 * num3) == num1 * num1 || (num1 * num1) + (num3 * num3) == num2 * num2)
         cout << "(" << num1 << ", " << num2 << ", " << num3 << ") è una terna è pitagorica." << endl;
     else
         cout << "(" << num1 << ", " << num2 << ", " << num3 << ") NON è una terna è pitagorica." << endl;
