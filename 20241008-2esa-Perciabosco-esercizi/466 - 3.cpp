@@ -23,7 +23,7 @@ int main()
 		return 1;
 	}
 	if(num1 == num2 && num1 == num3){
-		cout << "Tutti i numeri inseriti sono uguali" << endl;
+		cout << "Tutti i numeri inseriti sono uguali." << endl;
 		return 1;
 	}
 
