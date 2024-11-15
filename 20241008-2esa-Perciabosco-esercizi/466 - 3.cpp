@@ -19,9 +19,14 @@ int main()
     cin >> num3;
 
 	if(num1 == 0 || num2 == 0 || num3 == 0){
-		cout << "È stato inserito un numero pari a 0."
+		cout << "È stato inserito un numero pari a 0." << endl;
 		return 1;
 	}
+	if(num1 == num2 && num1 == num3){
+		cout << "Tutti i numeri inseriti sono uguali" << endl;
+		return 1;
+	}
+
     if (((num1 * num1) + (num2 * num2) == num3 * num3) || (num2 * num2) + (num3 * num3) == num1 * num1 || (num1 * num1) + (num3 * num3) == num2 * num2)
         cout << "(" << num1 << ", " << num2 << ", " << num3 << ") è una terna è pitagorica." << endl;
     else
