@@ -18,8 +18,7 @@ int main()
     cout << "Inserisci il valore di cui calcolare l'imposta: ";
     cin >> numero;
 
-    // elaborazione
-    imposta = 0.0; // Azzera l'imposta all'inizio per essere sicuri
+    // elaborazione dei dati
 
     // Scaglione 1: 0-5000 al 5%
     imposta += ((5000 + min(numero, 5000.0) - abs(5000 - min(numero, 5000.0))) / 2) * 0.05;
