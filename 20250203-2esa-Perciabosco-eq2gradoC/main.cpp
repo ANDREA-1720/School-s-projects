@@ -47,7 +47,7 @@ int main()
             }
             else
             {
-                cout << "L'equazione ha 2 soluzioni reali e distinte: X1 = " << sol1 << " e X2 = " << sol2 << "." << endl;
+                cout << "L'equazione ha 2 soluzioni reali e distinte: X = " << sol1 << " e X = " << sol2 << "." << endl;
             }
         }
     }
