@@ -11,9 +11,7 @@ using namespace std;
 
 int main()
 {
-    double coefA, coefB, coefC;
-    double delta, sqrtDelta;
-    double sol1, sol2;
+    double coefA, coefB, coefC, delta, sqrtDelta, sol1, sol2;
 
     cout << "Ax^2 + Bx + C = 0" << endl;
     cout << endl;
