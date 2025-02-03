@@ -25,7 +25,7 @@ int main()
     if (coefA == 0)
     {
         sol1 = -coefC / coefB;
-        cout << "L'equazione è di primo grado. La soluzione è X = " << sol1 << endl;
+        cout << "L'equazione è di primo grado. La soluzione è X = " << sol1 << "." << endl;
     }
     else
     {
@@ -43,11 +43,11 @@ int main()
 
             if (sol1 == sol2)
             {
-                cout << "L'equazione ha 2 soluzioni reali e coincidenti: X = " << sol1 << endl;
+                cout << "L'equazione ha 2 soluzioni reali e coincidenti: X = " << sol1 << "." << endl;
             }
             else
             {
-                cout << "L'equazione ha 2 soluzioni reali e distinte: X1 = " << sol1 << " e X2 = " << sol2 << endl;
+                cout << "L'equazione ha 2 soluzioni reali e distinte: X1 = " << sol1 << " e X2 = " << sol2 << "." << endl;
             }
         }
     }
