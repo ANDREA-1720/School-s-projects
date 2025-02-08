@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    int cif1, cif2, cif3, num, invertito;
+    int cif1 = 0, cif2 = 0, cif3 = 0, num, invertito;
 
     cout << "Inserisci un numero tra 0 e 999: ";
     cin >> num;
