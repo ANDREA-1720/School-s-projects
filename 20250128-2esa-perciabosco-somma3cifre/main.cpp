@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    int num, cif1, cif2, cif3, somma;
+    int num, cif1 = 0, cif2 = 0, cif3 = 0, somma;
 
     cout << "Inserisci un numero tra 0 e 999: ";
     cin >> num;
@@ -26,22 +26,22 @@ int main()
     {
         if (num < 10)
         {
-            somma = num;
+            cif1 = num;
         }
         else if (num < 100)
         {
             cif1 = num % 10;
             cif2 = (num / 10) % 10;
-            somma = cif1 + cif2;
         }
         else if (num < 1000)
         {
             cif1 = num % 10;
             cif2 = (num / 10) % 10;
             cif3 = (num / 100) % 10;
-            somma = cif1 + cif2 + cif3;
         }
     }
+
+    somma = cif1 + cif2 + cif3;
 
     cout << "La somma delle cifre di " << num << " e' " << somma << "." << endl;
     return 0;
