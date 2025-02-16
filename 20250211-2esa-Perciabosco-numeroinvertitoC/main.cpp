@@ -39,10 +39,11 @@ int main()
             cif2 = (num / 10) % 10;
             cif1 = (num / 100) % 10;
         }
+
+        invertito = cif3 * 100 + cif2 * 10 + cif1;
+
+        cout << "Il numero " << num << " invertito e' " << invertito << "." << endl;
     }
 
-    invertito = cif3 * 100 + cif2 * 10 + cif1;
-
-    cout << "Il numero " << num << " invertito e' " << invertito << "." << endl;
     return 0;
 }

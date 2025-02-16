@@ -39,10 +39,10 @@ int main()
             cif2 = (num / 10) % 10;
             cif3 = (num / 100) % 10;
         }
+
+        somma = cif1 + cif2 + cif3;
+
+        cout << "La somma delle cifre di " << num << " e' " << somma << "." << endl;
     }
-
-    somma = cif1 + cif2 + cif3;
-
-    cout << "La somma delle cifre di " << num << " e' " << somma << "." << endl;
     return 0;
 }
