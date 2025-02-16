@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 2ESA
-    Descrizione: "20250128-2esa-perciabosco-scambio3cifre"
+    Descrizione: "20250211-2esa-Perciabosco-sommacifreC"
 */
 
 #include <iostream>
@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    int cif1 = 0, cif2 = 0, cif3 = 0, num, invertito;
+    int num, cif1 = 0, cif2 = 0, cif3 = 0, somma;
 
     cout << "Inserisci un numero tra 0 e 999: ";
     cin >> num;
@@ -30,19 +30,19 @@ int main()
         }
         else if (num < 100)
         {
-            cif2 = num % 10;
-            cif1 = (num / 10) % 10;
+            cif1 = num % 10;
+            cif2 = (num / 10) % 10;
         }
         else if (num < 1000)
         {
-            cif3 = num % 10;
+            cif1 = num % 10;
             cif2 = (num / 10) % 10;
-            cif1 = (num / 100) % 10;
+            cif3 = (num / 100) % 10;
         }
     }
 
-    invertito = cif3 * 100 + cif2 * 10 + cif1;
+    somma = cif1 + cif2 + cif3;
 
-    cout << "Il numero " << num << " invertito e' " << invertito << "." << endl;
+    cout << "La somma delle cifre di " << num << " e' " << somma << "." << endl;
     return 0;
 }

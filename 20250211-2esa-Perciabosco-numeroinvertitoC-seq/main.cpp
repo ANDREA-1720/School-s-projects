@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 2ESA
-    Descrizione: "20250128-2esa-perciabosco-scambio3cifre-seq"
+    Descrizione: "20250211-2esa-Perciabosco-numeroinvertitoC-seq"
 */
 
 #include <iostream>
