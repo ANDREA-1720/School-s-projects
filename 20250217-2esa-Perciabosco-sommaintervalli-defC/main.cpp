@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 2ESA
-    Descrizione: "20250217-2esa-Perciabosco-sommaintervalliC"
+    Descrizione: "20250217-2esa-Perciabosco-sommaintervalli-defC"
 */
 
 #include <iostream>
@@ -15,11 +15,12 @@ int main()
     cout << "Inserisci un numero: ";
     cin >> num;
     num = abs(num);
-    while (indice < num)
+
+    for (indice = 1; indice <= num; indice++)
     {
-        indice++;
         somma += indice;
     }
+
     cout << "La somma di tutti i numeri compresi tra 1 e " << num << " e': " << somma << endl;
     return 0;
 }
