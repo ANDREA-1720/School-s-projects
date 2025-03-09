@@ -21,6 +21,12 @@ int main()
 
     srand(unsigned(time(NULL)));
 
+    if (inf > sup)
+    {
+        cout << "Il numero minimo deve essere minore del numero massimo" << endl;
+        return 1;
+    }
+
     for (conta = 0; conta < num; conta++)
     {
         comodo = rand() % (sup - inf + 1) + inf;
