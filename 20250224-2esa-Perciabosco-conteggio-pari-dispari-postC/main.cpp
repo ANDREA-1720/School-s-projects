@@ -20,7 +20,13 @@ int main()
     cin >> sup;
 
     srand(unsigned(time(NULL)));
+    num = abs(num);
 
+    if (inf == 0)
+    {
+        cout << "Inserisci un numero di ripetizioni diverso da 0." << endl;
+        return 1;
+    }
     if (inf > sup)
     {
         cout << "Il numero minimo deve essere minore del numero massimo." << endl;
