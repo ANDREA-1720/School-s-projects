@@ -47,6 +47,6 @@ int main()
         }
     } while (conta < num);
 
-    cout << "La quantità di numeri pari estratti è: " << contaPari << ", mentre quella di numeri dispari è: " << contaDispari << ", il che formano rispettivamente il " << round(((float)contaPari / (float)conta * 100) * 100) / 100 << "% e il " << round(((float)contaDispari / (float)conta * 100) * 100) / 100 << "% della somma." << endl;
+    cout << "La quantità di numeri pari estratti è: " << contaPari << ", mentre quella di numeri dispari è: " << contaDispari << ", il che formano rispettivamente il " << round((double)contaPari / (double)num * 100) << "% e il " << round((double)contaDispari / (double)num * 100) << "% della somma." << endl;
     return 0;
 }
