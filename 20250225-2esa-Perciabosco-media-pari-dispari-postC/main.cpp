@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 2ESA
-    Descrizione: "20250224-2esa-Perciabosco-conteggio-pari-dispari-preC"
+    Descrizione: "20250225-2esa-Perciabosco-media-pari-dispari-postC"
 */
 
 #include <iostream>
@@ -12,6 +12,7 @@ using namespace std;
 int main()
 {
     int num, inf, sup, contaPari = 0, contaDispari = 0, conta = 0, comodo;
+    double mediaPari = 0, mediaDispari = 0;
     cout << "Inserisci la quantità di numeri da estrarre" << endl;
     cin >> num;
     cout << "Inserisci il numero minimo da estrarre" << endl;
@@ -23,24 +24,30 @@ int main()
 
     if (inf > sup)
     {
-        cout << "Il numero minimo deve essere minore del numero massimo." << endl;
+        cout << "Il numero minimo deve essere minore del numero massimo" << endl;
         return 1;
     }
 
-    while (conta < num)
+    do
     {
         conta++;
         comodo = rand() % (sup - inf + 1) + inf;
         if (comodo % 2 == 0)
         {
             contaDispari++;
+            mediaDispari += comodo;
         }
         else
         {
             contaPari++;
+            mediaPari += comodo;
         }
-    }
+    } while (conta < num);
 
-    cout << "La quantità di numeri pari estratti è: " << contaPari << ", mentre quella di numeri dispari è: " << contaDispari << ", il che formano rispettivamente il " << round(((float)contaPari / (float)conta * 100) * 100) / 100 << "% e il " << round(((float)contaDispari / (float)conta * 100) * 100) / 100 << "% della somma." << endl;
+    if (contaPari != 0)
+        mediaPari /= contaPari;
+    if (contaDispari != 0)
+        mediaDispari /= contaDispari;
+    cout << "La media dei numeri pari estratti è: " << round(mediaPari * 100) / 100 << ", mentre quella dei numeri dispari è: " << round(mediaDispari * 100) / 100 << "." << endl;
     return 0;
 }
