@@ -29,7 +29,7 @@ int main()
     do
     {
         resto = resto - abs(divisore);
-        quoziente = quoziente + 1;
+        quoziente++;
     } while (resto >= abs(divisore));
 
     // Applica il segno al risultato se necessario
