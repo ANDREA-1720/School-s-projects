@@ -38,7 +38,7 @@ int main()
     }
 
     cout << "Il quoziente della divisione e' " << quoziente << endl;
-    cout << "Il resto della divisione e' " << resto << endl;
+    cout << "Il resto della divisione e' " << resto << "." << endl;
 
     return 0;
 }
