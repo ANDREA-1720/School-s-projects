@@ -11,8 +11,7 @@ using namespace std;
 
 int main()
 {
-    int dividendo, divisore, resto;
-    int quoziente = 0;
+    int dividendo, divisore, resto, quoziente = 0;
     cout << "Inserire il dividendo " << endl;
     cin >> dividendo;
     cout << "Inserire il divisore " << endl;
