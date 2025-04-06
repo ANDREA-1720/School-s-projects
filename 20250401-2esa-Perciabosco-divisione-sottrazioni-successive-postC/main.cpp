@@ -28,7 +28,7 @@ int main()
 
     do
     {
-        resto = resto - abs(divisore);
+        resto -= abs(divisore);
         quoziente++;
     } while (resto >= abs(divisore));
 

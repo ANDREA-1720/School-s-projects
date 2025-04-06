@@ -26,7 +26,7 @@ int main()
 
     for (resto = abs(dividendo); resto >= abs(divisore); quoziente++)
     {
-        resto = resto - abs(divisore);
+        resto -= abs(divisore);
     }
 
     // Applica il segno al risultato se necessario
