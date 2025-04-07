@@ -19,13 +19,20 @@ int main()
     
     cout << "Inserisci il livello da 1 a 3: " << endl;
     cin >> livello;
-    cout << "Inserisci il numero di equazioni da risolvere: " << endl;
+    cout << "Inserisci il numero di equazioni da risolvere (compreso tra 1 e 20): " << endl;
     cin >> num;
 
     if(livello < 1 || livello > 3)
     {
         cout << "Inserisci un numero compreso tra 1 e 3" << endl;
         return 1;
+    }
+
+    num = abs(num);
+    if(num > 20)
+    {
+        cout << "Numero equazioni impostato a 5" << endl;
+        num = 5;
     }
 
     if (livello == 1) {
