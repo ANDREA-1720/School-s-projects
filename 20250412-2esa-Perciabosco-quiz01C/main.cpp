@@ -41,7 +41,7 @@ int main()
     } else if (livello == 2) {
         max = 9999;
         min = 100;
-    } else if (livello == 3) {
+    } else {
         max = 999999;
         min = 10000;
     }
