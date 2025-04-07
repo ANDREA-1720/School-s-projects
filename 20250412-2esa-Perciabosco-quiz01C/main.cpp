@@ -46,7 +46,7 @@ int main()
         min = 10000;
     }
 
-    for(int i = 0; i < num; i++){
+    for(int conta = 0; conta < num; conta++){
         coeffA = rand() % (max - min + 1) + min;
         coeffB = rand() % (max - min + 1) + min;
         cout << "(arrotondando a due decimali)" << endl;
