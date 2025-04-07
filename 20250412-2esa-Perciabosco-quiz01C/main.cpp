@@ -50,7 +50,7 @@ int main()
         coeffA = rand() % (max - min + 1) + min;
         coeffB = rand() % (max - min + 1) + min;
         cout << "(arrotondando a due decimali)" << endl;
-        cout << "Inserisci la soluzione per la equazione " << coeffA << "x = " << coeffB << ": " << endl;
+        cout << "Inserisci la soluzione per l' equazione " << coeffA << "x = " << coeffB << ": " << endl;
         cin >> risposta;
 
         soluzione = static_cast<double>(coeffB) / coeffA;
