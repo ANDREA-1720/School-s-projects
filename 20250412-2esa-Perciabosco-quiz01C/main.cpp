@@ -13,7 +13,7 @@ using namespace std;
 
 int main()
 {
-    int livello, num, punteggio = 0, minA, maxA, minB, maxB, coeffA, coeffB;
+    int livello, num, punteggio = 0, min, max, coeffA, coeffB;
     double risposta, soluzione;
     srand(static_cast<unsigned>(time(0)));
     
@@ -28,45 +28,23 @@ int main()
         return 1;
     }
 
-    if(livello == 1)
-    {
-        minA = 1;
-        minB = 1;
-        maxA = 9;
-        maxB = 9;
-    } else if(livello == 2)
-    {
-        minA = -9;
-        minB = -9;
-        maxA = 9;
-        maxB = 9;
-    } else if(livello == 3)
-    {
-        minA = -99;
-        minB = -99;
-        maxA = 99;
-        maxB = 99;
+    if (livello == 1) {
+        max = 99;
+        min = 1;
+    } else if (livello == 2) {
+        max = 9999;
+        min = 100;
+    } else if (livello == 3) {
+        max = 999999;
+        min = 10000;
     }
 
     for(int i = 0; i < num; i++){
-        coeffA = rand() % (maxA - minA + 1) + minA;
-        coeffB = rand() % (maxB - minB + 1) + minB;
+        coeffA = rand() % (max - min + 1) + min;
+        coeffB = rand() % (max - min + 1) + min;
         cout << "(arrotondando a due decimali)" << endl;
         cout << "Inserisci la soluzione per la equazione " << coeffA << "x = " << coeffB << ": " << endl;
         cin >> risposta;
-
-        if (coeffA == 0)
-        {
-            if (coeffB == 0)
-            {
-                cout << "L'equazione è indeterminata." << endl;
-            }
-            else
-            {
-                cout << "L'equazione è impossibile." << endl;
-            }
-            num--;
-        }
 
         soluzione = static_cast<double>(coeffB) / coeffA;
         soluzione = round(soluzione * 100) / 100;
