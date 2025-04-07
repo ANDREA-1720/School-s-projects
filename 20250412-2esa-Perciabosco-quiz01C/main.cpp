@@ -24,7 +24,7 @@ int main()
 
     if(livello < 1 || livello > 3)
     {
-        cout << "Inserisci un numero compreso tra 1 e 3" << endl;
+        cout << "Inserisci un livello compreso tra 1 e 3" << endl;
         return 1;
     }
 
