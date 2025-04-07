@@ -61,7 +61,7 @@ int main()
             punteggio++;
             cout << "La soluzione è corretta." << endl;
         } else {
-            cout << "La soluzione è sbagliata. La risposta corretta è x=" << fixed << setprecision(2) << soluzione << endl;
+            cout << "La soluzione è errata. La risposta corretta è x=" << fixed << setprecision(2) << soluzione << endl;
         }
         cout << "Il tuo punteggio è di " << punteggio << "/" << num << endl;
         cout << endl;
