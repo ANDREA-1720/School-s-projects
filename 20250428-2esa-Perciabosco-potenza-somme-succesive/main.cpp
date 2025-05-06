@@ -53,6 +53,12 @@ int main()
         }
     }
 
-    cout << PERbase << " elevato alla " << PEResponente << " è uguale a " << PERpotenza << "." << endl;
+    if(PEResponente < 0)
+    {
+        cout << PERbase << " elevato alla " << PEResponente << " è uguale a 1/" << PERpotenza << "." << endl;
+    } else
+    {
+        cout << PERbase << " elevato alla " << PEResponente << " è uguale a " << PERpotenza << "." << endl;
+    }
     return 0;
 }
