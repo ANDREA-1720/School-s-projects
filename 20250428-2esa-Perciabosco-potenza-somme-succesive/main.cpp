@@ -10,48 +10,48 @@ using namespace std;
 
 int main()
 {
-    int PERpotenza = 1, PERbase, PEResponente, PERconta, PERindice, PERsegno, PERtemp;
+    int potenza = 1, base, esponente, conta, indice, segno, temp;
     cout << "Inserisci la base della potenza" << endl;
-    cin >> PERbase;
+    cin >> base;
     cout << "Inserisci l'esponente" << endl;
-    cin >> PEResponente;
-    PEResponente = abs(PEResponente);
+    cin >> esponente;
+    esponente = abs(esponente);
 
-    if (PERbase == 0)
+    if (base == 0)
     {
-        PERpotenza = 0;
+        potenza = 0;
     }
     else
     {
-        if (PEResponente % 2 == 0)
+        if (esponente % 2 == 0)
         {
-            PERsegno = 1;
+            segno = 1;
         }
         else
         {
-            PERsegno = PERbase / abs(PERbase);
+            segno = base / abs(base);
         }
 
-        PERpotenza = 1;
-        for (PERconta = 0; PERconta < PEResponente; PERconta++)
+        potenza = 1;
+        for (conta = 0; conta < esponente; conta++)
         {
-            PERtemp = 0;
-            for (PERindice = 0; PERindice < abs(PERbase); PERindice++)
+            temp = 0;
+            for (indice = 0; indice < abs(base); indice++)
             {
-                PERtemp += PERpotenza;
+                temp += potenza;
             }
-            PERpotenza = PERtemp;
+            potenza = temp;
         }
 
-        PERpotenza *= PERsegno;
+        potenza *= segno;
     }
 
-    if(PEResponente < 0)
+    if(esponente < 0)
     {
-        cout << PERbase << " elevato alla " << PEResponente << " è uguale a 1/" << PERpotenza << "." << endl;
+        cout << base << " elevato alla " << esponente << " è uguale a 1/" << potenza << "." << endl;
     } else
     {
-        cout << PERbase << " elevato alla " << PEResponente << " è uguale a " << PERpotenza << "." << endl;
+        cout << base << " elevato alla " << esponente << " è uguale a " << potenza << "." << endl;
     }
     return 0;
 }
