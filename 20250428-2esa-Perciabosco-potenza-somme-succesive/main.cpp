@@ -17,40 +17,33 @@ int main()
     cin >> PEResponente;
     PEResponente = abs(PEResponente);
 
-    if (PEResponente == 0)
+    if (PERbase == 0)
     {
-        PERpotenza = 1;
+        PERpotenza = 0;
     }
     else
     {
-        if (PERbase == 0)
+        if (PEResponente % 2 == 0)
         {
-            PERpotenza = 0;
+            PERsegno = 1;
         }
         else
         {
-            if (PEResponente % 2 == 0)
-            {
-                PERsegno = 1;
-            }
-            else
-            {
-                PERsegno = PERbase / abs(PERbase);
-            }
-
-            PERpotenza = 1;
-            for (PERconta = 0; PERconta < PEResponente; PERconta++)
-            {
-                PERtemp = 0;
-                for (PERindice = 0; PERindice < abs(PERbase); PERindice++)
-                {
-                    PERtemp += PERpotenza;
-                }
-                PERpotenza = PERtemp;
-            }
-
-            PERpotenza *= PERsegno;
+            PERsegno = PERbase / abs(PERbase);
         }
+
+        PERpotenza = 1;
+        for (PERconta = 0; PERconta < PEResponente; PERconta++)
+        {
+            PERtemp = 0;
+            for (PERindice = 0; PERindice < abs(PERbase); PERindice++)
+            {
+                PERtemp += PERpotenza;
+            }
+            PERpotenza = PERtemp;
+        }
+
+        PERpotenza *= PERsegno;
     }
 
     if(PEResponente < 0)
