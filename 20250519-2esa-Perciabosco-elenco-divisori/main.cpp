@@ -22,7 +22,11 @@ int main()
         }
     }
 
-    cout << "I " << quanti << " divisori di " << num << " sono: ";
+    if(num == 0 ){
+        cout << "0 non ha divisori";
+    } else {
+        cout << "I " << quanti << " divisori di " << num << " sono: ";
+    }
 
     for(divisore = 1; divisore <= abs(num); divisore++){
         if(num % divisore == 0){
