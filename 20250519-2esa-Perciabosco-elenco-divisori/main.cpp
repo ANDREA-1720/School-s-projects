@@ -11,16 +11,29 @@ using namespace std;
 
 int main()
 {
-    int num, divisore;
+    int num, divisore, quanti = 0;
 
     cout << "Inserisci il numero di cui mostrare i divisore: " << endl;
     cin >> num;
 
     for(divisore = 1; divisore <= abs(num); divisore++){
         if(num % divisore == 0){
-            cout << "+/- " << divisore << " è un divsore di " << num << "." << endl;
+            quanti++;
         }
     }
+
+    cout << "I " << quanti << " divisori di " << num << " sono: ";
+
+    for(divisore = 1; divisore <= abs(num); divisore++){
+        if(num % divisore == 0){
+            cout << "+/-" << divisore;
+            if(divisore != abs(num)){
+                cout << ", ";
+            }
+        }
+    }
+
+    cout << "." << endl;
 
     return 0;
 }
