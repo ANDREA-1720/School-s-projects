@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 2ESA
-    Descrizione: "20250519-classe-Perciabosco-somma-cifre-ciclo"
+    Descrizione: "20250519-classe-Perciabosco-contrario-numero-ciclo"
 */
 
 #include <iostream>
@@ -10,19 +10,21 @@
 using namespace std;
 
 int main() {
-  int num, cifra, somma = 0;
+  int num, cifra, contrario = 0, segno = 1;
 
   cout << "Inserisci un numero: ";
   cin >> num;
 
+  segno = num / abs(num);
   num = abs(num);
 
   while (num > 0) {
     cifra = num % 10;
-    somma += cifra;
+    contrario = contrario * 10 + cifra;
     num /= 10;
   }
+  contrario *= segno;
 
-  cout << "La somma delle cifre  è: " << somma << endl;
+  cout << "Il numero contrario è: " << contrario << endl;
   return 0;
 }
