@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    int corrente = 1, precedente = 1, indice, num;
+    long corrente = 1, precedente = 1, indice, num;
     
     cout << "Inserisci il numero" << endl;
     cin >> num;
