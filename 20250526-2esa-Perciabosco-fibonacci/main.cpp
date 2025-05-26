@@ -22,7 +22,7 @@ int main()
         precedente = corrente - precedente;
     }
 
-    cout << "Il " << num << " della sequenza pitagorica è " << corrente << "." << endl;
+    cout << "Il " << num << " della sequenza di fibonacci è " << corrente << "." << endl;
     
     return 0;
 }
