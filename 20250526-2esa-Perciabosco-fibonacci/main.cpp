@@ -18,8 +18,8 @@ int main()
     num = abs(num);
     
     for(indice = 2; indice < num; indice++){
-        precedente = corrente;
         corrente += precedente;
+        precedente = corrente - precedente;
     }
 
     cout << "Il " << num << " della sequenza pitagorica è " << corrente << "." << endl;
