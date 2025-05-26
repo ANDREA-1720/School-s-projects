@@ -11,18 +11,22 @@ using namespace std;
 
 int main()
 {
-    long corrente = 1, precedente = 1, indice, num;
+    unsigned long corrente = 1, precedente = 1, indice;
+    int num;
     
     cout << "Inserisci il numero" << endl;
     cin >> num;
     num = abs(num);
     
-    for(indice = 2; indice < num; indice++){
-        corrente += precedente;
-        precedente = corrente - precedente;
+    if(num > 93){
+        cout << "Il numero è troppo grande per essere calcolato, inseriscine uno minore"
+    } else {
+        for(indice = 2; indice < num; indice++){
+            corrente += precedente;
+            precedente = corrente - precedente;
+        }
+        cout << "Il " << num << " della sequenza di fibonacci è " << corrente << "." << endl;
     }
-
-    cout << "Il " << num << " della sequenza di fibonacci è " << corrente << "." << endl;
     
     return 0;
 }
