@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    unsigned long corrente = 1, precedente = 1, indice;
+    unsigned long corrente = 1, precedente = 0, indice;
     int num;
     
     cout << "Inserisci il numero" << endl;
@@ -21,11 +21,13 @@ int main()
     if(num > 93){
         cout << "Il numero è troppo grande per essere calcolato, inseriscine uno minore." << endl;
     } else {
-        for(indice = 2; indice < num; indice++){
+        cout << "I numeri della seguenza di fibonacci fino al numero " << num << " sono: 1";
+        for(indice = 1; indice < num; indice++){
             corrente += precedente;
             precedente = corrente - precedente;
+            cout << ", " << corrente;
         }
-        cout << "Il " << num << " della sequenza di fibonacci è " << corrente << "." << endl;
+        cout << "." << endl;
     }
     
     return 0;
