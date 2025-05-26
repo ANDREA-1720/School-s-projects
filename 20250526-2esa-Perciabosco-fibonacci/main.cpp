@@ -23,6 +23,6 @@ int main()
     }
 
     cout << "Il " << num << " della sequenza pitagorica è " << corrente << "." << endl;
-    // comunicazione dei risultati output
+    
     return 0;
 }
