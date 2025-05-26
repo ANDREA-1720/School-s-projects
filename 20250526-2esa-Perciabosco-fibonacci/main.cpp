@@ -19,7 +19,7 @@ int main()
     num = abs(num);
     
     if(num > 93){
-        cout << "Il numero è troppo grande per essere calcolato, inseriscine uno minore"
+        cout << "Il numero è troppo grande per essere calcolato, inseriscine uno minore." << endl;
     } else {
         for(indice = 2; indice < num; indice++){
             corrente += precedente;
