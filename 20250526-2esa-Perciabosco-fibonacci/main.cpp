@@ -11,8 +11,8 @@ using namespace std;
 
 int main()
 {
-    unsigned long corrente = 1, precedente = 0, indice;
-    int num;
+    unsigned long corrente = 1, precedente = 0;
+    int num, indice;
     
     cout << "Inserisci il numero" << endl;
     cin >> num;
