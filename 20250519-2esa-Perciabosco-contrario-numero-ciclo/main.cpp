@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 2ESA
-    Descrizione: "20250519-classe-Perciabosco-contrario-numero-ciclo"
+    Descrizione: "20250519-2esa-Perciabosco-contrario-numero-ciclo"
 */
 
 #include <iostream>
