@@ -18,11 +18,15 @@ int main()
     cin >> num;
     num = abs(num);
     
-    for(int indice = 1; indice <= num; indice++){
-        fat *= indice;
-    }
+    if(num > 20){
+        cout << "Numero troppo grande per calcolarne il fattoriale, inserisci un numero minore." << endl;
+    } else {
+        for(int indice = 1; indice <= num; indice++){
+            fat *= indice;
+        }
 
-    cout << num << "! è uguale a " << fat << "." << endl;
+        cout << num << "! è uguale a " << fat << "." << endl;
+    }
 
     return 0;
 }
