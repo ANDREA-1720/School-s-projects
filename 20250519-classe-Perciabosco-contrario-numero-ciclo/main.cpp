@@ -10,7 +10,7 @@
 using namespace std;
 
 int main() {
-  int num, cifra, contrario = 0, segno = 1;
+  int num, cifra, contrario = 0, segno;
 
   cout << "Inserisci un numero: ";
   cin >> num;
