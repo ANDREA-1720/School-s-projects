@@ -21,6 +21,7 @@ int main()
         indice++;
         somma += indice;
     } while (indice < num);
+    
     cout << "La somma di tutti i numeri compresi tra 1 e " << num << " e': " << somma << endl;
     return 0;
 }

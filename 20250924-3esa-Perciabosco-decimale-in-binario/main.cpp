@@ -18,6 +18,7 @@ int main() {
     binario += (decimale % 2) * pow(10, indice);
     decimale = decimale / 2;
   }
+  
   cout << "Il numero decimale " << decimale << " è rappresentato in binario con " << binario << endl;
   return 0;
 }

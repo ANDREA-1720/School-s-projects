@@ -18,5 +18,6 @@ int main() {
     vetdati[indice] = rand() % 100 + 1;
     cout << "Dato in posizione " << indice << " di valore " << vetdati[indice] << endl;
   }
+  
   return 0;
 }

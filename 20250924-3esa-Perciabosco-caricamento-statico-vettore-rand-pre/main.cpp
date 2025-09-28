@@ -19,5 +19,6 @@ int main() {
     cout << "Dato in posizione " << indice << " di valore " << vetdati[indice] << endl;
     indice++;
   }
+  
   return 0;
 }

@@ -16,5 +16,6 @@ int main() {
     cin >> vetdati[indice];
     cout << "Dato in posizione " << indice << " di valore " << vetdati[indice] << endl;
   }
+  
   return 0;
 }
