@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 2ESA
-    Descrizione: "20250924-3esa-Perciabosco-MCD-euclide"
+    Descrizione: "20250924-3esa-Perciabosco-MCD-Euclide"
 */
 
 #include <iostream>

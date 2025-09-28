@@ -1,3 +1,3 @@
 # Autore: Andrea Perciabosco
 # Classe: 2ESA
-# Descri: "20250924-3esa-Perciabosco-MCD-euclide"
+# Descri: "20250924-3esa-Perciabosco-MCD-Euclide"
