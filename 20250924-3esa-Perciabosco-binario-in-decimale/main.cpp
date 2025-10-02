@@ -10,11 +10,12 @@
 using namespace std;
 
 int main() {
-  int binario, decimale = 0, indice, cifra;
+  int indice, cifra;
+  unsigned long long binario;
+  long long decimale = 0;
   cout << "Inserisci un numero binario" << endl;
   cin >> binario;
 
-  binario = abs(binario);
   for (indice = 0; binario > 0; indice++) {
     cifra = binario % 10;
     decimale += cifra * pow(2, indice);
