@@ -20,6 +20,6 @@ int main() {
     binario = (binario - cifra) / 10;
   }
 
-  cout << "Il numero binario " << binario << " è rappresentato in decimale con " << decimale << endl;
+  cout << "Il numero binario " << binario << " è rappresentato in decimale con " << decimale << "." << endl;
   return 0;
 }
