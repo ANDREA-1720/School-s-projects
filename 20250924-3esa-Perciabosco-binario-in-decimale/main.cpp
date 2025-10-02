@@ -10,13 +10,14 @@
 using namespace std;
 
 int main() {
-  int binario, decimale = 0, indice;
+  int binario, decimale = 0, indice, cifra;
   cout << "Inserisci un numero binario" << endl;
   cin >> binario;
 
   for (indice = 0; binario > 0; indice++) {
-    decimale += pow(2, indice) * (int)(binario % 10);
-    binario = binario / 10;
+    cifra = binario % 10;
+    decimale += cifra * pow(2, indice);
+    binario = (binario - cifra) / 10;
   }
 
   cout << "Il numero binario " << binario << " è rappresentato in decimale con " << decimale << endl;
