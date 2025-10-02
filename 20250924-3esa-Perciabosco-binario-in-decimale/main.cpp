@@ -14,6 +14,7 @@ int main() {
   cout << "Inserisci un numero binario" << endl;
   cin >> binario;
 
+  binario = abs(binario);
   for (indice = 0; binario > 0; indice++) {
     cifra = binario % 10;
     decimale += cifra * pow(2, indice);
