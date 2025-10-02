@@ -10,7 +10,8 @@
 using namespace std;
 
 int main() {
-  long long decimale, binario = 0;
+  long long decimale;
+  unsigned long long binario = 0;
   int indice, cifra;
   cout << "Inserisci un numero decimale" << endl;
   cin >> decimale;
