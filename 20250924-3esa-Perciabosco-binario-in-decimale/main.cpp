@@ -10,18 +10,19 @@
 using namespace std;
 
 int main() {
-  int indice, cifra;
-  unsigned long long binario;
-  long long decimale = 0;
+  int indice, cifra, segno;
+  long long binario, decimale = 0;
   cout << "Inserisci un numero binario" << endl;
   cin >> binario;
 
+  segno = binario/abs(binario)
   for (indice = 0; binario > 0; indice++) {
     cifra = binario % 10;
     decimale += cifra * pow(2, indice);
     binario = (binario - cifra) / 10;
   }
+  decimale *= segno
 
-  cout << "Il numero binario " << binario << " è rappresentato in decimale con " << decimale << "." << endl;
+  cout << "Il numero è rappresentato in decimale con " << decimale << "." << endl;
   return 0;
 }
