@@ -16,7 +16,7 @@ int main() {
   cout << "Inserisci un numero decimale" << endl;
   cin >> decimale;
 
-  segno = decoimale/abs(decimale);
+  segno = decimale/abs(decimale);
   decimale = abs(decimale);    
   for (indice = 0; decimale > 0; indice++) {
     cifra = decimale % 2;
