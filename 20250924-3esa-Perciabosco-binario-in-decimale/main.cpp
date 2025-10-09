@@ -18,6 +18,10 @@ int main() {
   segno = binario/abs(binario);
   for (indice = 0; binario > 0; indice++) {
     cifra = binario % 10;
+    if(cif>1) {
+        cout << "Il numero inserito non è stato corretamente inserito in binario." << endl;
+        return 1;
+    }
     decimale += cifra * pow(2, indice);
     binario = (binario - cifra) / 10;
   }
