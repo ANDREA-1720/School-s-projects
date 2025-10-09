@@ -25,6 +25,6 @@ int main() {
   }
   decimale *= segno;
   
-  cout << "Il numero decimale " << decimale << " è rappresentato in binario con " << binario << "." << endl;
+  cout << "Il numero è rappresentato in binario con " << binario << "." << endl;
   return 0;
 }
