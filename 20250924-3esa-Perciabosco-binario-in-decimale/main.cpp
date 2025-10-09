@@ -21,7 +21,7 @@ int main() {
     decimale += cifra * pow(2, indice);
     binario = (binario - cifra) / 10;
   }
-  decimale *= segno
+  decimale *= segno;
 
   cout << "Il numero è rappresentato in decimale con " << decimale << "." << endl;
   return 0;
