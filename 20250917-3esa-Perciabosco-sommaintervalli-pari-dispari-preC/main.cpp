@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    int num, somma = 0, indice = 0;
+    int num, sommaPari = 0, sommaDispari = 0, indice = 0;
     cout << "Inserisci un numero: ";
     cin >> num;
     num = abs(num);
