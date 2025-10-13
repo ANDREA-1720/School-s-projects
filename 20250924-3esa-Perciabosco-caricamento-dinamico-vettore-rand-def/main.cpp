@@ -22,6 +22,11 @@ int main() {
   cin >> max;
   int vetdati[dati];
 
+  if(max<min){
+      min = min + max;
+      max = min - max;
+      min = min - max;
+  }
   for (indice = 0; indice < dati; indice++) {
     vetdati[indice] = rand() % (max - min + 1) + min;
     cout << "Dato in posizione " << indice << " di valore " << vetdati[indice] << endl;
