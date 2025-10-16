@@ -1,8 +1,7 @@
 /*
     Autore: Andrea Perciabosco
-    Classe: 2ESA
-    Descrizione:
-   "20251016-3esa-Perciabosco-caricamento-contrario"
+    Classe: 3ESA
+    Descrizione: "20251016-3esa-Perciabosco-caricamento-contrario"
 */
 
 #include <cstdlib>

@@ -1,8 +1,7 @@
 /*
     Autore: Andrea Perciabosco
-    Classe: 2ESA
-    Descrizione:
-   "20250924-3esa-Perciabosco-caricamento-statico-vettore-rand-pre"
+    Classe: 3ESA
+    Descrizione: "20250924-3esa-Perciabosco-caricamento-statico-vettore-rand-pre"
 */
 
 #include <cstdlib>

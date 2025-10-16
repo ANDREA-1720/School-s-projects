@@ -1,6 +1,6 @@
 /*
     Autore: Andrea Perciabosco
-    Classe: 2ESA
+    Classe: 3ESA
     Descrizione:
    "20250924-3esa-Perciabosco-caricamento-statico-vettore-rand-def"
 */
