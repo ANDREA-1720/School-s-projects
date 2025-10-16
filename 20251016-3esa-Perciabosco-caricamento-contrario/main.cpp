@@ -24,6 +24,7 @@ int main() {
   int vetnum1[dati];
   int vetcont[dati];
 
+  dati=abs(dati);
   if(max<min){
       min = min + max;
       max = min - max;

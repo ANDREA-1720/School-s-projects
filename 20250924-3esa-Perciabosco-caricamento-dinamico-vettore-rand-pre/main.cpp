@@ -22,6 +22,7 @@ int main() {
   cin >> max;
   int vetdati[dati];
 
+  dati=abs(dati);
   if(max<min){
       min = min + max;
       max = min - max;
