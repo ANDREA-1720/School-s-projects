@@ -29,8 +29,7 @@ int main() {
       max = min - max;
       min = min - max;
   }
-  cout << min << endl;
-  cout << max << endl;
+
   for (indice = 0; indice < dati; indice++) { //while(indice<dati){
     comodo = rand() % (max - min + 1) + min;
     vetnum1[indice] = comodo;
