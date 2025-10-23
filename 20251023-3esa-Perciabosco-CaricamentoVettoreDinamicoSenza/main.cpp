@@ -13,7 +13,7 @@ using namespace std;
 
 int main() {
   srand((unsigned)time(NULL));
-  int indice, indice2 ,comodo, dati, min, max, cifra, duplicato;
+  int indice/*=0*/, indice2 ,comodo, dati, min, max, cifra, duplicato;
   cout << "Inserisci la quantità di dati da generare" << endl;
   cin >> dati;
   do{
@@ -33,14 +33,16 @@ int main() {
     max = min - max;
     min = min - max;
   }
-  
-  for (indice = 0; indice < dati; indice++) {
+
+  for (indice = 0; indice < dati; indice++) { // while(indice < dati){
     duplicato = 0;
     comodo = rand() % (max - min + 1) + min;
-    for(indice2 = 0; indice2 < indice; indice2++){
+    // indice2 = 0
+    for(indice2 = 0; indice2 < indice && duplicato == 0; indice2++){ // while(indice2 < indice && duplicato == 0){
       if(vetnum1[indice] == vetnum1[indice2]){
         duplicato = 1;
       }
+      // indice2++
     }
     vetnum1[indice] = comodo;
     if(duplicato != 0){
@@ -48,6 +50,7 @@ int main() {
     } else {
       cout << "Il valore in posizione " << indice << " è " << vetnum1[indice] << "." << endl;
     }
+    // indice++
   }
 
   return 0;
