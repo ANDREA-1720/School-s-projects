@@ -38,9 +38,10 @@ int main() {
     duplicato = 0;
     comodo = rand() % (max - min + 1) + min;
     // indice2 = 0
-    for(indice2 = 0; indice2 < indice && duplicato == 0; indice2++){ // while(indice2 < indice && duplicato == 0){
+    for(indice2 = 0; indice2 < indice; indice2++){ // while(indice2 < indice && duplicato == 0){
       if(vetnum1[indice] == vetnum1[indice2]){
         duplicato = 1;
+        indice2 = indice;
       }
       // indice2++
     }
