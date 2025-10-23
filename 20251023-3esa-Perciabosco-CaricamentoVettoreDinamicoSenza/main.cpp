@@ -43,7 +43,7 @@ int main() {
         duplicato = 1;
         indice2 = indice;
       }
-      // indice2++
+      // indice2++;
     }
     vetnum1[indice] = comodo;
     if(duplicato != 0){
@@ -51,7 +51,7 @@ int main() {
     } else {
       cout << "Il valore in posizione " << indice << " è " << vetnum1[indice] << "." << endl;
     }
-    // indice++
+    // indice++;
   }
 
   return 0;
