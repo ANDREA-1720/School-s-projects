@@ -22,7 +22,7 @@ int main() {
     cout << "Inserisci il valore massimo dei dati da generare" << endl;
     cin >> max;
     if(abs(max-min) < dati){
-      cout<<"Intervallo non valido, non contiene abbastanza numeri per riempire il vettore con soli numeri distinti." << endl;
+      cout<<"Intervallo non valido, non è abbastanza grade per riempire il vettore con soli numeri distinti." << endl;
     }
   } while(abs(max-min) < dati);
   int vetnum1[dati];
