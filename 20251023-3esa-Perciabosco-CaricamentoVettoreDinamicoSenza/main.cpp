@@ -45,10 +45,11 @@ int main() {
       }
       // indice2++;
     }
-    vetnum1[indice] = comodo;
+    
     if(duplicato != 0){
       indice--;
     } else {
+      vetnum1[indice] = comodo;
       cout << "Il valore in posizione " << indice << " è " << vetnum1[indice] << "." << endl;
     }
     // indice++;
