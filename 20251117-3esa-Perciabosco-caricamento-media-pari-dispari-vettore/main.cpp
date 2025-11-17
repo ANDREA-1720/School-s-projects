@@ -1,8 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 3ESA
-    Descrizione:
-   "20251117-3esa-Perciabosco-caricamento-media-pari-dispari-vettore"
+    Descrizione: "20251117-3esa-Perciabosco-caricamento-media-pari-dispari-vettore"
 */
 
 #include <cstdlib>
