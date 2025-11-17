@@ -44,14 +44,14 @@ int main() {
 
   if(contaPari != 0){ 
     mediaPari /= contaPari;
-    cout << "La media dei numeri pari è " << mediaPari << "." << endl;
+    cout << "La media dei " << contaPari << " numeri pari è " << mediaPari << "." << endl;
   } else {
     cout << "Non sono presenti numeri pari." << endl;
   }
 
   if(contaDispari != 0){ 
     mediaDispari /= contaDispari;
-    cout << "La media dei numeri pari è " << mediaDispari << "." << endl;
+    cout << "La media dei " << contaDispari << " numeri pari è " << mediaDispari << "." << endl;
   } else {
     cout << "Non sono presenti numeri pari." << endl;
   }
