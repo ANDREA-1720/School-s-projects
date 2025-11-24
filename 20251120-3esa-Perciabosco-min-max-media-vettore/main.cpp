@@ -55,7 +55,7 @@ int main() {
     } else {
       vetnum[indice] = comodo;
       somma += vetnum[indice];
-      cout << "Il valore in posizione " << indice << " è " << vetnum[indice] << "." << endl;
+      cout << "Il valore in posizione " << indice + 1 << " è " << vetnum[indice] << "." << endl;
 
       if(comodo < vetnum[posMin]){
         posMin = indice;
@@ -77,9 +77,9 @@ int main() {
   }
 
   cout << endl;
-  cout << "Il valore minimo è " << vetnum[posMin] << " in posizione " << posMin << "." << endl;
-  cout << "Il valore massimo è " << vetnum[posMax] << " in posizione " << posMax << "." << endl;
-  cout << "La media è " << media << " e il valore più vicino è " << vetnum[posMedia] << " in posizione " << posMedia << "." << endl;
+  cout << "Il valore minimo è " << vetnum[posMin] << " in posizione " << posMin + 1 << "." << endl;
+  cout << "Il valore massimo è " << vetnum[posMax] << " in posizione " << posMax + 1 << "." << endl;
+  cout << "La media è " << media << " e il valore più vicino è " << vetnum[posMedia] << " in posizione " << posMedia + 1 << "." << endl;
 
   return 0;
 }
