@@ -25,7 +25,7 @@ int main() {
       cout<<"Intervallo non valido, non è abbastanza grade per riempire il vettore con soli numeri distinti." << endl;
     }
   } while(abs(max-min) < dati);
-  int vetnum1[dati];
+  int vetnum[dati];
 
   dati=abs(dati);
   if(max<min){
@@ -39,7 +39,7 @@ int main() {
     comodo = rand() % (max - min + 1) + min;
     // indice2 = 0
     for(indice2 = 0; indice2 < indice; indice2++){ // while(indice2 < indice){
-      if(vetnum1[indice] == vetnum1[indice2]){
+      if(vetnum[indice] == vetnum[indice2]){
         duplicato = 1;
         indice2 = indice;
       }
@@ -49,8 +49,8 @@ int main() {
     if(duplicato != 0){
       indice--;
     } else {
-      vetnum1[indice] = comodo;
-      cout << "Il valore in posizione " << indice << " è " << vetnum1[indice] << "." << endl;
+      vetnum[indice] = comodo;
+      cout << "Il valore in posizione " << indice << " è " << vetnum[indice] << "." << endl;
     }
     // indice++;
   }
