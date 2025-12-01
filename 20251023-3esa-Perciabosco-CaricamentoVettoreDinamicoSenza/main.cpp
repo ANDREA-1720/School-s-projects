@@ -50,7 +50,7 @@ int main() {
       indice--;
     } else {
       vetnum[indice] = comodo;
-      cout << "Il valore in posizione " << indice << " è " << vetnum[indice] << "." << endl;
+      cout << "Il valore in posizione " << indice + 1 << " è " << vetnum[indice] << "." << endl;
     }
     // indice++;
   }

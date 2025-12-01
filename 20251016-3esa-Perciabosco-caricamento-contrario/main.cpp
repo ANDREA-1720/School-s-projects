@@ -41,7 +41,7 @@ int main() {
       comodo /= 10;
       //indice2++
     }
-    cout << "Il valore in posizione " << indice << " è " << vetnum1[indice] << " che al contrario è scritto " << vetcont[indice] << "." << endl;
+    cout << "Il valore in posizione " << indice + 1 << " è " << vetnum1[indice] << " che al contrario è scritto " << vetcont[indice] << "." << endl;
     //indice++;
   }
 

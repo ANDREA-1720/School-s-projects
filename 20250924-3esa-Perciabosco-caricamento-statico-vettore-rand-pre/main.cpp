@@ -16,7 +16,7 @@ int main() {
 
   while (indice < 10) {
     vetdati[indice] = rand() * 101;
-    cout << "Dato in posizione " << indice << " di valore " << vetdati[indice]
+    cout << "Dato in posizione " << indice + 1 << " di valore " << vetdati[indice]
          << endl;
     indice++;
   }

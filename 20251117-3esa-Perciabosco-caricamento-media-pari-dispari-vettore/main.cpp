@@ -31,7 +31,7 @@ int main() {
   for (indice = 0; indice < dati; indice++) {
     comodo = rand() % (max - min + 1) + min;
     vetdati[indice] = comodo;
-    cout << "Dato in posizione " << indice << " di valore " << comodo << endl;
+    cout << "Dato in posizione " << indice + 1 << " di valore " << comodo << endl;
     if(comodo % 2 == 0){
       mediaPari += comodo;
       contaPari++;

@@ -14,7 +14,7 @@ int main() {
 
   for (indice = 0; indice < 10; indice++) {
     cin >> vetdati[indice];
-    cout << "Dato in posizione " << indice << " di valore " << vetdati[indice] << endl;
+    cout << "Dato in posizione " << indice + 1 << " di valore " << vetdati[indice] << endl;
   }
   
   return 0;

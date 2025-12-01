@@ -14,7 +14,7 @@ int main() {
 
   while (indice < 10) {
     cin >> vetdati[indice];
-    cout << "Dato in posizione " << indice << " di valore " << vetdati[indice] << endl;
+    cout << "Dato in posizione " << indice + 1 << " di valore " << vetdati[indice] << endl;
     indice++;
   }
   

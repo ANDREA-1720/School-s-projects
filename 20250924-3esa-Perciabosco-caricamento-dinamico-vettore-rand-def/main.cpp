@@ -30,7 +30,7 @@ int main() {
   }
   for (indice = 0; indice < dati; indice++) {
     vetdati[indice] = rand() % (max - min + 1) + min;
-    cout << "Dato in posizione " << indice << " di valore " << vetdati[indice] << endl;
+    cout << "Dato in posizione " << indice + 1 << " di valore " << vetdati[indice] << endl;
   }
 
   return 0;

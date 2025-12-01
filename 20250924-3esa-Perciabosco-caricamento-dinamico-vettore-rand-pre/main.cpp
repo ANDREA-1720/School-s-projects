@@ -29,7 +29,7 @@ int main() {
   }
   while (indice < dati) {
     vetdati[indice] = rand() % (max - min + 1) + min;
-    cout << "Dato in posizione " << indice << " di valore " << vetdati[indice]
+    cout << "Dato in posizione " << indice + 1 << " di valore " << vetdati[indice]
          << endl;
     indice++;
   }
