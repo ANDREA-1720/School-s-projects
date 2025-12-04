@@ -12,71 +12,56 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install CMake (Linux/MacOS)
-        if: runner.os != 'Windows'
-        run: sudo apt-get install cmake -y || brew install cmake
+      - name: Install compilers (Linux & Windows)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ cmake \
+              mingw-w64
 
-      - name: Setup environment (Linux/MacOS)
-        if: runner.os != 'Windows'
+      - name: Install CMake (macOS)
+        if: runner.os == 'macOS'
+        run: brew install cmake
+
+      - name: Setup environment
         run: |
           mkdir -p build
-          for dir in */; do
-            if [[ -f "$dir/main.cpp" ]]; then
-              echo "Trovato $dir"
-              mkdir -p build/$dir
-            fi
-          done
-
-      - name: Setup environment (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          mkdir build
-          Get-ChildItem -Directory | ForEach-Object {
-            if (Test-Path "$($_.FullName)\main.cpp") {
-              echo "Trovato $($_.Name)"
-              mkdir "build\$($_.Name)"
-            }
-          }
-        shell: pwsh
-
-      - name: Setup Ambiente MSVC (Windows)
-        if: runner.os == 'Windows'
-        uses: microsoft/setup-msbuild@v1.0.2
-        with:
-          vs-version: '[16.0,)'
-
-      - name: Setup Developer Command Prompt (Windows)
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Build projects (Linux/MacOS)
-        if: runner.os != 'Windows'
-        run: |
-          for dir in */; do
-            if [[ -f "$dir/main.cpp" ]]; then
-              echo "Compilando $dir"
-              g++ "$dir/main.cpp" -o "build/$dir/${{ matrix.os }}-$(basename $dir)" -std=c++17
+          for dir in */ ; do
+            if [ -f "$dir/main.cpp" ]; then
+              echo "Found project: $dir"
+              mkdir -p "build/$dir"
             fi
           done
         shell: bash
 
-      - name: Build projects (Windows)
-        if: runner.os == 'Windows'
+      - name: Build binaries (Linux & MacOS)
         run: |
-          for /d %%i in (*) do (
-          if exist "%%i\main.cpp" (
-              echo Compilando %%i
-              cl.exe /EHsc /std:c++17 "%%i\main.cpp" /Fe:"build\%%i\${{ matrix.os }}-%%i.exe"
-            )
-          )
-        shell: cmd
-      
+          for dir in */ ; do
+            if [ -f "$dir/main.cpp" ]; then
+              echo "Compiling $dir for ${{ matrix.os }}"
+              g++ "$dir/main.cpp" -std=c++17 -o "build/$dir/${{ matrix.os }}-$(basename $dir)"
+            fi
+          done
+        shell: bash
+
+      - name: Build binaries (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          for dir in */ ; do
+            if [ -f "$dir/main.cpp" ]; then
+              echo "Compiling $dir for Windows (MinGW)"
+              x86_64-w64-mingw32-g++ "$dir/main.cpp" -std=c++17 \
+                 -static -static-libgcc -static-libstdc++ \
+                 -o "build/$dir/windows-$(basename $dir).exe"
+            fi
+          done
+        shell: bash
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -100,11 +85,11 @@ jobs:
         with:
           path: build
 
-      - name: Ottieni la data corrente
+      - name: Get date
         id: get_date
         run: echo "DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
 
-      - name: Gather built executables
+      - name: Pack executables
         run: |
           mkdir -p release
           for os_dir in build/*; do
@@ -123,4 +108,4 @@ jobs:
           name: "${{ env.DATE }}-Perciabcosco"
           tag_name: "${{ env.DATE }}-Perciabcosco"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}name: C/C++ CI
