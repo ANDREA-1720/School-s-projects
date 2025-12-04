@@ -108,4 +108,4 @@ jobs:
           name: "${{ env.DATE }}-Perciabcosco"
           tag_name: "${{ env.DATE }}-Perciabcosco"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}name: C/C++ CI
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
