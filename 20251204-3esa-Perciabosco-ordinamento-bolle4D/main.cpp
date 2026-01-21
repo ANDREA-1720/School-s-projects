@@ -14,7 +14,7 @@ using namespace std;
 int main() {
   srand((unsigned)time(NULL));
   int indice /*=0*/, indice2, comodo, dati, min, max;
-  bool scambiato;
+  bool scambiato = true;
   cout << "Inserisci la quantità di dati da generare" << endl;
   cin >> dati;
   do {
