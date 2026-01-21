@@ -6,6 +6,8 @@
 
 #include <iostream>
 #include <math.h>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -42,7 +44,7 @@ int main()
             indice2 = indice;
         }
         }
-        
+
         if(duplicato != 0){
         indice--;
         } else {
