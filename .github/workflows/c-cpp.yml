@@ -50,7 +50,7 @@ jobs:
           done
         shell: bash
 
-      - name: Build binaries (Linux)
+      - name: Build binaries (Windows)
         if: runner.os == 'Linux'
         run: |
           for dir in */ ; do
