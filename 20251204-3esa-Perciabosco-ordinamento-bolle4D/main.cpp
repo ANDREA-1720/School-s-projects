@@ -14,7 +14,7 @@ using namespace std;
 int main() {
   srand((unsigned)time(NULL));
   int indice /*=0*/, indice2, comodo, dati, min, max;
-  bool scambiato = true;
+  bool scambiato = true, duplicato;
   cout << "Inserisci la quantità di dati da generare" << endl;
   cin >> dati;
   do {
@@ -37,7 +37,7 @@ int main() {
 
   cout << "Vettore non ordinato:" << endl;
   for (indice = 0; indice < dati; indice++) {
-    bool duplicato = false;
+    duplicato = false;
     do {
       comodo = rand() % (max - min + 1) + min;
       duplicato = false;
