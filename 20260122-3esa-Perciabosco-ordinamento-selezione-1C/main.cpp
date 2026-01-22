@@ -54,7 +54,7 @@ int main() {
   }
 
   for (indice = 0; indice < dati - 1; indice++) {
-    for (indice2 = indice; indice2 < dati; indice2++) {
+    for (indice2 = indice + 1; indice2 < dati; indice2++) {
       if (vetnum[indice] > vetnum[indice2]) {
         comodo = vetnum[indice2];
         vetnum[indice2] = vetnum[indice];
