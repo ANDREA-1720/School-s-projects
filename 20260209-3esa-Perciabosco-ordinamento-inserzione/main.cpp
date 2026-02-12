@@ -42,7 +42,7 @@ int main() {
       }
     }
 
-    for(temp = dati; temp > indice2; temp--){
+    for(temp = dati-1; temp > indice2; temp--){
       vetnum[temp] = vetnum[temp-1];
     }
     vetnum[indice2] = comodo;
