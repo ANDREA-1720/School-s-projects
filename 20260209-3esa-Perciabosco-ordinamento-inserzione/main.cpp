@@ -16,6 +16,7 @@ int main() {
   int indice/*=0*/, indice2 ,comodo, temp, dati, min, max;
   cout << "Inserisci la quantità di dati da generare" << endl;
   cin >> dati;
+  dati=abs(dati);
   do{
     cout << "Inserisci il valore minimo dei dati da generare" << endl;
     cin >> min;
@@ -27,7 +28,6 @@ int main() {
   } while(abs(max-min) < dati);
   int vetnum[dati];
 
-  dati=abs(dati);
   if(max<min){
     min = min + max;
     max = min - max;
