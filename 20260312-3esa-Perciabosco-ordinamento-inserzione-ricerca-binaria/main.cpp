@@ -13,7 +13,7 @@ using namespace std;
 
 int main() {
   srand((unsigned)time(NULL));
-  int indic, indice2, indice3 ,comodo, temp, dati, min, max, med;
+  int indice, indice2, indice3 ,comodo, temp, dati, min, max, med;
   cout << "Inserisci la quantità di dati da generare" << endl;
   cin >> dati;
   dati=abs(dati);
