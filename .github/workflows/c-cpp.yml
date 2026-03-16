@@ -151,6 +151,11 @@ jobs:
         shell: bash
 
       - name: Update SHA cache
+        run: |
+          cp -r .cache/curr_shas/. .cache/prev_shas/
+        shell: bash
+
+      - name: Update SHA cache
         uses: actions/cache/save@v4
         with:
           path: .cache/prev_shas
