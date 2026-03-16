@@ -25,26 +25,49 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install cmake
 
-      - name: Fetch build cache from latest release
+      - name: Restore SHA cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/prev_shas
+          key: shas-${{ matrix.os }}-${{ github.run_id }}
+          restore-keys: |
+            shas-${{ matrix.os }}-
+
+      - name: Fetch missing SHAs from latest release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p .cache/zips .cache/prev_shas
-          TAG=$(gh release list --limit 1 --json tagName -q '.[0].tagName' 2>/dev/null || echo "")
-          if [ -n "$TAG" ]; then
-            echo "Fetching cache from release: $TAG"
-            gh release download "$TAG" \
-              --pattern "*-binaries-${{ matrix.os }}.zip" \
-              --dir .cache/zips 2>/dev/null || echo "No cached assets found"
-            for zip in .cache/zips/*.zip; do
-              [ -f "$zip" ] || continue
-              prog=$(basename "$zip" "-binaries-${{ matrix.os }}.zip")
-              unzip -p "$zip" metadata.sha512 > ".cache/prev_shas/$prog" 2>/dev/null && \
-                echo "Loaded cache SHA for: $prog" || true
-            done
-          else
-            echo "No previous release — everything will be built fresh"
+          mkdir -p .cache/prev_shas .cache/zips
+
+          missing=()
+          for dir in */ ; do
+            if [ -f "$dir/main.cpp" ]; then
+              prog=$(basename "$dir")
+              [ ! -f ".cache/prev_shas/$prog" ] && missing+=("$prog")
+            fi
+          done
+
+          if [ ${#missing[@]} -eq 0 ]; then
+            echo "All SHAs present in cache — skipping release fetch"
+            exit 0
           fi
+
+          echo "Missing SHAs for: ${missing[*]}"
+          TAG=$(gh release list --limit 1 --json tagName -q '.[0].tagName' 2>/dev/null || echo "")
+          [ -z "$TAG" ] && echo "No previous release found" && exit 0
+
+          for prog in "${missing[@]}"; do
+            gh release download "$TAG" \
+              --pattern "${prog}-binaries-${{ matrix.os }}.zip" \
+              --dir .cache/zips 2>/dev/null || true
+            zip_file=".cache/zips/${prog}-binaries-${{ matrix.os }}.zip"
+            if [ -f "$zip_file" ]; then
+              unzip -p "$zip_file" metadata.sha512 > ".cache/prev_shas/$prog" 2>/dev/null && \
+                echo "Fetched SHA for: $prog" || true
+            else
+              echo "No release zip for: $prog (will build fresh)"
+            fi
+          done
         shell: bash
 
       - name: Compute source SHAs (tar + SHA-512)
@@ -111,19 +134,24 @@ jobs:
                 x86_64-w64-mingw32-g++ "$dir/main.cpp" -std=c++17 \
                   -static -static-libgcc -static-libstdc++ \
                   -o "build/new/$prog/windows-$prog.exe"
-                # metadata.sha512 already written by the Linux/macOS step above
               fi
             fi
           done
         shell: bash
 
+      - name: Update SHA cache
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/prev_shas
+          key: shas-${{ matrix.os }}-${{ github.run_id }}
+
       - name: Upload newly built binaries
         uses: actions/upload-artifact@v4
         with:
           name: binaries-${{ matrix.os }}
-          path: build/new/          # only freshly compiled programs
+          path: build/new/
           retention-days: 1
-          if-no-files-found: warn   # nothing new to upload is fine
+          if-no-files-found: warn
           compression-level: 9
 
   release:
@@ -144,49 +172,72 @@ jobs:
       - name: Get date
         run: echo "DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
 
-      - name: Assemble release zips (new + cached)
+      - name: Restore zips cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/old_zips
+          key: release-zips-${{ github.run_id }}
+          restore-keys: |
+            release-zips-
+
+      - name: Fetch missing zips from latest release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p release .cache/old_zips
+          mkdir -p .cache/old_zips release
 
           TAG=$(gh release list --limit 1 --json tagName -q '.[0].tagName' 2>/dev/null || echo "")
+          [ -z "$TAG" ] && echo "No previous release" && exit 0
 
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
               prog=$(basename "$dir")
-
               for os_name in binaries-ubuntu-latest binaries-macos-latest; do
-                zip_out="release/${prog}-${os_name}.zip"
+                zip_file=".cache/old_zips/${prog}-${os_name}.zip"
                 new_dir="build/$os_name/$prog"
-
-                if [ -d "$new_dir" ]; then
-                  # Freshly compiled — use artifact
-                  echo "[$prog / $os_name] Using newly built binary"
-                  zip -9 -j "$zip_out" "$new_dir"/*
-
-                elif [ -n "$TAG" ]; then
-                  # Unchanged — carry forward from previous release
-                  old_zip=".cache/old_zips/${prog}-${os_name}.zip"
-                  if [ ! -f "$old_zip" ]; then
-                    gh release download "$TAG" \
-                      --pattern "${prog}-${os_name}.zip" \
-                      --dir .cache/old_zips 2>/dev/null || true
-                  fi
-                  if [ -f "$old_zip" ]; then
-                    echo "[$prog / $os_name] Carrying forward cached zip"
-                    cp "$old_zip" "$zip_out"
-                  else
-                    echo "WARNING: [$prog / $os_name] No previous zip found — skipping"
-                  fi
-
-                else
-                  echo "WARNING: [$prog / $os_name] No binary and no previous release — skipping"
+                # Only need the old zip if there's no fresh build for this program
+                if [ ! -d "$new_dir" ] && [ ! -f "$zip_file" ]; then
+                  echo "Fetching missing zip: ${prog}-${os_name}"
+                  gh release download "$TAG" \
+                    --pattern "${prog}-${os_name}.zip" \
+                    --dir .cache/old_zips 2>/dev/null || \
+                    echo "WARNING: No previous zip for ${prog}-${os_name}"
                 fi
               done
             fi
           done
         shell: bash
+
+      - name: Assemble release zips
+        run: |
+          mkdir -p release
+
+          for dir in */ ; do
+            if [ -f "$dir/main.cpp" ]; then
+              prog=$(basename "$dir")
+              for os_name in binaries-ubuntu-latest binaries-macos-latest; do
+                zip_out="release/${prog}-${os_name}.zip"
+                new_dir="build/$os_name/$prog"
+
+                if [ -d "$new_dir" ]; then
+                  echo "[$prog / $os_name] Zipping new build"
+                  zip -9 -j "$zip_out" "$new_dir"/*
+                elif [ -f ".cache/old_zips/${prog}-${os_name}.zip" ]; then
+                  echo "[$prog / $os_name] Carrying forward cached zip"
+                  cp ".cache/old_zips/${prog}-${os_name}.zip" "$zip_out"
+                else
+                  echo "WARNING: [$prog / $os_name] No binary available — skipping"
+                fi
+              done
+            fi
+          done
+        shell: bash
+
+      - name: Update zips cache
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/old_zips
+          key: release-zips-${{ github.run_id }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
