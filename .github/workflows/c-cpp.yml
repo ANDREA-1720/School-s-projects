@@ -252,6 +252,11 @@ jobs:
         shell: bash
 
       - name: Update zips cache
+        run: |
+          cp -r release/*.zip .cache/old_zips
+        shell: bash
+
+      - name: Update zips cache
         uses: actions/cache/save@v4
         with:
           path: .cache/old_zips
