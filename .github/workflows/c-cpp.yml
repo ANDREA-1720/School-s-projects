@@ -124,6 +124,7 @@ jobs:
           path: build/new/          # only freshly compiled programs
           retention-days: 1
           if-no-files-found: warn   # nothing new to upload is fine
+          compression-level: 9
 
   release:
     needs: build
