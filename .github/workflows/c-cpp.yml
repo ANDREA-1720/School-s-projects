@@ -28,7 +28,19 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++ cmake mingw-w64
+          sudo apt-get install -y \
+            clang \
+            lld \
+            gcc-aarch64-linux-gnu  # sysroot + libs only; clang is the compiler
+
+      - name: Install llvm-mingw for Windows (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          LLVM_MINGW_TAG=20240619
+          ARCHIVE=llvm-mingw-${LLVM_MINGW_TAG}-ucrt-ubuntu-20.04-x86_64.tar.xz
+          wget -q "https://github.com/mstorsjo/llvm-mingw/releases/download/${LLVM_MINGW_TAG}/${ARCHIVE}"
+          tar xf "${ARCHIVE}"
+          echo "$PWD/llvm-mingw-${LLVM_MINGW_TAG}-ucrt-ubuntu-20.04-x86_64/bin" >> $GITHUB_PATH
 
       - name: Install CMake (macOS)
         if: runner.os == 'macOS'
@@ -108,8 +120,11 @@ jobs:
           done
         shell: bash
 
-      - name: Build binaries (Linux & macOS)
+      - name: Build Linux binaries (amd64 & arm64)
+        if: runner.os == 'Linux'
         run: |
+          CXXFLAGS="-std=c++17 -O3 -flto -funroll-loops -fomit-frame-pointer -DNDEBUG -s"
+
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
               prog=$(basename "$dir")
@@ -117,27 +132,56 @@ jobs:
               prev=$(cat ".cache/prev_shas/$prog" 2>/dev/null || echo "")
 
               if [ -n "$curr" ] && [ "$curr" = "$prev" ]; then
-                echo "[$prog] Cache hit — skipping"
+                echo "[$prog] Cache hit — skipping Linux builds"
               else
-                echo "[$prog] Cache miss — building"
+                echo "[$prog] Building linux-amd64 and linux-arm64"
                 mkdir -p "build/new/$prog"
-                g++ "$dir/main.cpp" \
-                  -std=c++17 \
-                  -O3 \
-                  -flto \
-                  -funroll-loops \
-                  -fomit-frame-pointer \
-                  -DNDEBUG \
-                  -s \
-                  -o "build/new/$prog/${{ matrix.os }}-$prog"
+
+                clang++ "$dir/main.cpp" $CXXFLAGS \
+                  -fuse-ld=lld \
+                  -o "build/new/$prog/linux-amd64-$prog"
+
+                clang++ "$dir/main.cpp" $CXXFLAGS \
+                  --target=aarch64-linux-gnu \
+                  --sysroot=/usr/aarch64-linux-gnu \
+                  -fuse-ld=lld \
+                  -o "build/new/$prog/linux-arm64-$prog"
+
                 echo "$curr" > "build/new/$prog/metadata.sha512"
               fi
             fi
           done
         shell: bash
 
-      - name: Build binaries (Windows via MinGW)
+      - name: Build Windows binaries (amd64 & arm64 via llvm-mingw)
         if: runner.os == 'Linux'
+        run: |
+          CXXFLAGS="-std=c++17 -O3 -flto -funroll-loops -fomit-frame-pointer -DNDEBUG -s -static"
+
+          for dir in */ ; do
+            if [ -f "$dir/main.cpp" ]; then
+              prog=$(basename "$dir")
+              curr=$(cat ".cache/curr_shas/$prog" 2>/dev/null || echo "")
+              prev=$(cat ".cache/prev_shas/$prog" 2>/dev/null || echo "")
+
+              if [ -n "$curr" ] && [ "$curr" = "$prev" ]; then
+                echo "[$prog] Cache hit — skipping Windows builds"
+              else
+                echo "[$prog] Building windows-amd64 and windows-arm64"
+                mkdir -p "build/new/$prog"
+
+                x86_64-w64-mingw32-clang++ "$dir/main.cpp" $CXXFLAGS \
+                  -o "build/new/$prog/windows-amd64-$prog.exe"
+
+                aarch64-w64-mingw32-clang++ "$dir/main.cpp" $CXXFLAGS \
+                  -o "build/new/$prog/windows-arm64-$prog.exe"
+              fi
+            fi
+          done
+        shell: bash
+
+      - name: Build macOS universal binary (arm64 + x86_64)
+        if: runner.os == 'macOS'
         run: |
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
@@ -146,31 +190,27 @@ jobs:
               prev=$(cat ".cache/prev_shas/$prog" 2>/dev/null || echo "")
 
               if [ -n "$curr" ] && [ "$curr" = "$prev" ]; then
-                echo "[$prog] Cache hit (Windows) — skipping"
+                echo "[$prog] Cache hit — skipping macOS build"
               else
-                echo "[$prog] Cache miss — building for Windows"
+                echo "[$prog] Building macos-universal (arm64 + x86_64)"
                 mkdir -p "build/new/$prog"
-                x86_64-w64-mingw32-g++ "$dir/main.cpp" \
-                  -std=c++17 \
-                  -O3 \
-                  -flto \
-                  -funroll-loops \
-                  -fomit-frame-pointer \
-                  -DNDEBUG \
-                  -s \
-                  -static -static-libgcc -static-libstdc++ \
-                  -o "build/new/$prog/windows-$prog.exe"
+
+                clang++ "$dir/main.cpp" \
+                  -std=c++17 -O3 -flto -funroll-loops -fomit-frame-pointer -DNDEBUG \
+                  -arch arm64 -arch x86_64 \
+                  -o "build/new/$prog/macos-universal-$prog"
+
+                echo "$curr" > "build/new/$prog/metadata.sha512"
               fi
             fi
           done
         shell: bash
 
       - name: Update SHA cache
-        run: |
-          cp -r .cache/curr_shas/. .cache/prev_shas/
+        run: cp -r .cache/curr_shas/. .cache/prev_shas/
         shell: bash
 
-      - name: Update SHA cache
+      - name: Save SHA cache
         uses: actions/cache/save@v4
         with:
           path: .cache/prev_shas
@@ -228,7 +268,6 @@ jobs:
               for os_name in binaries-ubuntu-latest binaries-macos-latest; do
                 zip_file=".cache/old_zips/${prog}-${os_name}.zip"
                 new_dir="build/$os_name/$prog"
-                # Only need the old zip if there's no fresh build for this program
                 if [ ! -d "$new_dir" ] && [ ! -f "$zip_file" ]; then
                   echo "Fetching missing zip: ${prog}-${os_name}"
                   gh release download "$TAG" \
@@ -267,11 +306,10 @@ jobs:
         shell: bash
 
       - name: Update zips cache
-        run: |
-          cp -r release/*.zip .cache/old_zips
+        run: cp -r release/*.zip .cache/old_zips
         shell: bash
 
-      - name: Update zips cache
+      - name: Save zips cache
         uses: actions/cache/save@v4
         with:
           path: .cache/old_zips
