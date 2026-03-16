@@ -3,8 +3,10 @@ name: C/C++ CI
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - '**.cpp'
+      - '**.h'
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
