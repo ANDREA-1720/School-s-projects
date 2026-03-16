@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -16,99 +15,113 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install compilers (Linux & Windows)
+      - name: Install compilers (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++ cmake mingw-w64 zstd zip
+          sudo apt-get install -y g++ cmake mingw-w64
 
       - name: Install CMake (macOS)
         if: runner.os == 'macOS'
-        run: brew install cmake zstd zip
+        run: brew install cmake
 
-      - name: Setup environment
+      - name: Fetch build cache from latest release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p build
+          mkdir -p .cache/zips .cache/prev_shas
+          TAG=$(gh release list --limit 1 --json tagName -q '.[0].tagName' 2>/dev/null || echo "")
+          if [ -n "$TAG" ]; then
+            echo "Fetching cache from release: $TAG"
+            gh release download "$TAG" \
+              --pattern "*-binaries-${{ matrix.os }}.zip" \
+              --dir .cache/zips 2>/dev/null || echo "No cached assets found"
+            for zip in .cache/zips/*.zip; do
+              [ -f "$zip" ] || continue
+              prog=$(basename "$zip" "-binaries-${{ matrix.os }}.zip")
+              unzip -p "$zip" metadata.sha512 > ".cache/prev_shas/$prog" 2>/dev/null && \
+                echo "Loaded cache SHA for: $prog" || true
+            done
+          else
+            echo "No previous release — everything will be built fresh"
+          fi
+        shell: bash
+
+      - name: Compute source SHAs (tar + SHA-512)
+        run: |
+          mkdir -p .cache/curr_shas
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
-              echo "Found project: $dir"
-              mkdir -p "build/$dir"
+              prog=$(basename "$dir")
+              sha=$(tar -cf - \
+                --exclude="$dir/README.md" \
+                --exclude="$dir/execute.sh" \
+                "$dir" \
+                | python3 -c "
+import sys, hashlib, tarfile, io
+h = hashlib.sha512()
+with tarfile.open(fileobj=io.BytesIO(sys.stdin.buffer.read())) as tf:
+    for m in sorted(tf.getmembers(), key=lambda x: x.name):
+        if m.isfile():
+            h.update(m.name.encode())
+            h.update(tf.extractfile(m).read())
+print(h.hexdigest())")
+              echo "$sha" > ".cache/curr_shas/$prog"
+              echo "$prog SHA: ${sha:0:20}..."
             fi
           done
         shell: bash
 
-      - name: Compute directory hashes
-        id: hash
+      - name: Build binaries (Linux & macOS)
         run: |
-          echo "Calculating hashes for each project directory..."
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
-              hash=$(tar --exclude='README.md' --exclude='execute.sh' -I "zstd -19 --long=30" -cf - "$dir" | sha512sum | awk '{print $1}')
-              echo "hash-$dir=$hash" >> $GITHUB_OUTPUT
-            fi
-          done
-        shell: bash
+              prog=$(basename "$dir")
+              curr=$(cat ".cache/curr_shas/$prog" 2>/dev/null || echo "")
+              prev=$(cat ".cache/prev_shas/$prog" 2>/dev/null || echo "")
 
-      - name: Cache builds
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: build
-          key: build-${{ matrix.os }}-${{ steps.hash.outputs.hash }}
-          restore-keys: |
-            build-${{ matrix.os }}-
-
-      - name: Build binaries (Linux & MacOS)
-        id: build_binaries
-        run: |
-          built_files=()
-          for dir in */ ; do
-            if [ -f "$dir/main.cpp" ]; then
-              hash_var="hash-$dir"
-              hash_val="${{ steps.hash.outputs[hash_var] }}"
-              output_file="build/$dir/${{ matrix.os }}-$(basename $dir)"
-              if [ ! -f "$output_file" ] || [ "$(cat "$output_file.sha")" != "$hash_val" ]; then
-                echo "Compiling $dir for ${{ matrix.os }}"
-                g++ "$dir/main.cpp" -std=c++17 -o "$output_file"
-                echo "$hash_val" > "$output_file.sha"
-                built_files+=("$output_file")
+              if [ -n "$curr" ] && [ "$curr" = "$prev" ]; then
+                echo "[$prog] Cache hit — skipping"
               else
-                echo "$dir is up-to-date, skipping."
+                echo "[$prog] Cache miss — building"
+                mkdir -p "build/new/$prog"
+                g++ "$dir/main.cpp" -std=c++17 -o "build/new/$prog/${{ matrix.os }}-$prog"
+                echo "$curr" > "build/new/$prog/metadata.sha512"
               fi
             fi
           done
-          echo "${built_files[@]}" > built_files.txt
         shell: bash
 
-      - name: Build binaries (Windows)
+      - name: Build binaries (Windows via MinGW)
         if: runner.os == 'Linux'
         run: |
-          built_files=()
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
-              hash_var="hash-$dir"
-              hash_val="${{ steps.hash.outputs[hash_var] }}"
-              output_file="build/$dir/windows-$(basename $dir).exe"
-              if [ ! -f "$output_file" ] || [ "$(cat "$output_file.sha")" != "$hash_val" ]; then
-                echo "Compiling $dir for Windows (MinGW)"
+              prog=$(basename "$dir")
+              curr=$(cat ".cache/curr_shas/$prog" 2>/dev/null || echo "")
+              prev=$(cat ".cache/prev_shas/$prog" 2>/dev/null || echo "")
+
+              if [ -n "$curr" ] && [ "$curr" = "$prev" ]; then
+                echo "[$prog] Cache hit (Windows) — skipping"
+              else
+                echo "[$prog] Cache miss — building for Windows"
+                mkdir -p "build/new/$prog"
                 x86_64-w64-mingw32-g++ "$dir/main.cpp" -std=c++17 \
                   -static -static-libgcc -static-libstdc++ \
-                  -o "$output_file"
-                echo "$hash_val" > "$output_file.sha"
-                built_files+=("$output_file")
-              else
-                echo "$dir is up-to-date, skipping Windows build."
+                  -o "build/new/$prog/windows-$prog.exe"
+                # metadata.sha512 already written by the Linux/macOS step above
               fi
             fi
           done
-          echo "${built_files[@]}" > built_files.txt
         shell: bash
 
-      - name: Upload newly built artifacts
+      - name: Upload newly built binaries
         uses: actions/upload-artifact@v4
         with:
-          name: new-binaries-${{ matrix.os }}
-          path: built_files.txt
+          name: binaries-${{ matrix.os }}
+          path: build/new/          # only freshly compiled programs
+          retention-days: 1
+          if-no-files-found: warn   # nothing new to upload is fine
 
   release:
     needs: build
@@ -123,49 +136,54 @@ jobs:
       - name: Download newly built artifacts
         uses: actions/download-artifact@v4
         with:
-          name: new-binaries-ubuntu-latest
-          path: build-new
+          path: build
 
       - name: Get date
-        id: get_date
         run: echo "DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
 
-      - name: Get previous release
-        id: prev_release
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const releases = await github.rest.repos.listReleases({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              per_page: 1
-            });
-            if (releases.data.length > 0) {
-              return releases.data[0].tag_name;
-            } else {
-              return '';
-            }
-          result-encoding: string
-
-      - name: Download previous release artifacts
-        if: steps.prev_release.outputs.result != ''
+      - name: Assemble release zips (new + cached)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Downloading old release binaries..."
-          mkdir -p old_release
-          gh release download "${{ steps.prev_release.outputs.result }}" -D old_release
+          mkdir -p release .cache/old_zips
 
-      - name: Pack release files
-        run: |
-          mkdir -p release
-          # merge old and new binaries
-          cp -r old_release/* release/ || true
-          cp -r build-new/* release/ || true
-          # pack each directory into zip (max compression)
-          for dir in release/*; do
-            if [ -d "$dir" ]; then
-              zip -9 -r "${dir}.zip" "$dir"
+          TAG=$(gh release list --limit 1 --json tagName -q '.[0].tagName' 2>/dev/null || echo "")
+
+          for dir in */ ; do
+            if [ -f "$dir/main.cpp" ]; then
+              prog=$(basename "$dir")
+
+              for os_name in binaries-ubuntu-latest binaries-macos-latest; do
+                zip_out="release/${prog}-${os_name}.zip"
+                new_dir="build/$os_name/$prog"
+
+                if [ -d "$new_dir" ]; then
+                  # Freshly compiled — use artifact
+                  echo "[$prog / $os_name] Using newly built binary"
+                  zip -9 -j "$zip_out" "$new_dir"/*
+
+                elif [ -n "$TAG" ]; then
+                  # Unchanged — carry forward from previous release
+                  old_zip=".cache/old_zips/${prog}-${os_name}.zip"
+                  if [ ! -f "$old_zip" ]; then
+                    gh release download "$TAG" \
+                      --pattern "${prog}-${os_name}.zip" \
+                      --dir .cache/old_zips 2>/dev/null || true
+                  fi
+                  if [ -f "$old_zip" ]; then
+                    echo "[$prog / $os_name] Carrying forward cached zip"
+                    cp "$old_zip" "$zip_out"
+                  else
+                    echo "WARNING: [$prog / $os_name] No previous zip found — skipping"
+                  fi
+
+                else
+                  echo "WARNING: [$prog / $os_name] No binary and no previous release — skipping"
+                fi
+              done
             fi
           done
+        shell: bash
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
