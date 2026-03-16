@@ -228,7 +228,7 @@ jobs:
 
       - name: Assemble release zips
         run: |
-          mkdir -p release
+          mkdir -p .cache/old_zips release
 
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
