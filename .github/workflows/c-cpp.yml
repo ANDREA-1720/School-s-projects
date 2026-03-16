@@ -121,7 +121,15 @@ jobs:
               else
                 echo "[$prog] Cache miss — building"
                 mkdir -p "build/new/$prog"
-                g++ "$dir/main.cpp" -std=c++17 -o "build/new/$prog/${{ matrix.os }}-$prog"
+                g++ "$dir/main.cpp" \
+                  -std=c++17 \
+                  -O3 \
+                  -flto \
+                  -funroll-loops \
+                  -fomit-frame-pointer \
+                  -DNDEBUG \
+                  -s \
+                  -o "build/new/$prog/${{ matrix.os }}-$prog"
                 echo "$curr" > "build/new/$prog/metadata.sha512"
               fi
             fi
@@ -142,7 +150,14 @@ jobs:
               else
                 echo "[$prog] Cache miss — building for Windows"
                 mkdir -p "build/new/$prog"
-                x86_64-w64-mingw32-g++ "$dir/main.cpp" -std=c++17 \
+                x86_64-w64-mingw32-g++ "$dir/main.cpp" \
+                  -std=c++17 \
+                  -O3 \
+                  -flto \
+                  -funroll-loops \
+                  -fomit-frame-pointer \
+                  -DNDEBUG \
+                  -s \
                   -static -static-libgcc -static-libstdc++ \
                   -o "build/new/$prog/windows-$prog.exe"
               fi
