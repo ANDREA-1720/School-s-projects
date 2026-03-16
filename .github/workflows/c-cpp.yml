@@ -49,6 +49,17 @@ jobs:
 
       - name: Compute source SHAs (tar + SHA-512)
         run: |
+          cat > /tmp/compute_sha.py <<'PYEOF'
+          import sys, hashlib, tarfile, io
+          h = hashlib.sha512()
+          with tarfile.open(fileobj=io.BytesIO(sys.stdin.buffer.read())) as tf:
+              for m in sorted(tf.getmembers(), key=lambda x: x.name):
+                  if m.isfile():
+                      h.update(m.name.encode())
+                      h.update(tf.extractfile(m).read())
+          print(h.hexdigest())
+          PYEOF
+
           mkdir -p .cache/curr_shas
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
@@ -56,16 +67,7 @@ jobs:
               sha=$(tar -cf - \
                 --exclude="$dir/README.md" \
                 --exclude="$dir/execute.sh" \
-                "$dir" \
-                | python3 -c "
-import sys, hashlib, tarfile, io
-h = hashlib.sha512()
-with tarfile.open(fileobj=io.BytesIO(sys.stdin.buffer.read())) as tf:
-    for m in sorted(tf.getmembers(), key=lambda x: x.name):
-        if m.isfile():
-            h.update(m.name.encode())
-            h.update(tf.extractfile(m).read())
-print(h.hexdigest())")
+                "$dir" | python3 /tmp/compute_sha.py)
               echo "$sha" > ".cache/curr_shas/$prog"
               echo "$prog SHA: ${sha:0:20}..."
             fi
