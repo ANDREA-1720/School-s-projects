@@ -142,9 +142,9 @@ jobs:
                   -o "build/new/$prog/linux-amd64-$prog"
 
                 clang++ "$dir/main.cpp" $CXXFLAGS \
-								  --target=aarch64-linux-gnu \
-								  -fuse-ld=lld \
-  								-o "build/new/$prog/linux-arm64-$prog"
+                  -fuse-ld=lld \
+                  --target=aarch64-linux-gnu \
+                  -o "build/new/$prog/linux-arm64-$prog"
 
                 echo "$curr" > "build/new/$prog/metadata.sha512"
               fi
