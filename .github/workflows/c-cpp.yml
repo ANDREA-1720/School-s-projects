@@ -3,8 +3,6 @@ name: C/C++ CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:
@@ -22,12 +20,11 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++ cmake \
-              mingw-w64
+          sudo apt-get install -y g++ cmake mingw-w64 zstd zip
 
       - name: Install CMake (macOS)
         if: runner.os == 'macOS'
-        run: brew install cmake
+        run: brew install cmake zstd zip
 
       - name: Setup environment
         run: |
@@ -40,35 +37,78 @@ jobs:
           done
         shell: bash
 
-      - name: Build binaries (Linux & MacOS)
+      - name: Compute directory hashes
+        id: hash
         run: |
+          echo "Calculating hashes for each project directory..."
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
-              echo "Compiling $dir for ${{ matrix.os }}"
-              g++ "$dir/main.cpp" -std=c++17 -o "build/$dir/${{ matrix.os }}-$(basename $dir)"
+              hash=$(tar --exclude='README.md' --exclude='execute.sh' -I "zstd -19 --long=30" -cf - "$dir" | sha512sum | awk '{print $1}')
+              echo "hash-$dir=$hash" >> $GITHUB_OUTPUT
             fi
           done
+        shell: bash
+
+      - name: Cache builds
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: build
+          key: build-${{ matrix.os }}-${{ steps.hash.outputs.hash }}
+          restore-keys: |
+            build-${{ matrix.os }}-
+
+      - name: Build binaries (Linux & MacOS)
+        id: build_binaries
+        run: |
+          built_files=()
+          for dir in */ ; do
+            if [ -f "$dir/main.cpp" ]; then
+              hash_var="hash-$dir"
+              hash_val="${{ steps.hash.outputs[hash_var] }}"
+              output_file="build/$dir/${{ matrix.os }}-$(basename $dir)"
+              if [ ! -f "$output_file" ] || [ "$(cat "$output_file.sha")" != "$hash_val" ]; then
+                echo "Compiling $dir for ${{ matrix.os }}"
+                g++ "$dir/main.cpp" -std=c++17 -o "$output_file"
+                echo "$hash_val" > "$output_file.sha"
+                built_files+=("$output_file")
+              else
+                echo "$dir is up-to-date, skipping."
+              fi
+            fi
+          done
+          echo "${built_files[@]}" > built_files.txt
         shell: bash
 
       - name: Build binaries (Windows)
         if: runner.os == 'Linux'
         run: |
+          built_files=()
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
-              echo "Compiling $dir for Windows (MinGW)"
-              x86_64-w64-mingw32-g++ "$dir/main.cpp" -std=c++17 \
-                 -static -static-libgcc -static-libstdc++ \
-                 -o "build/$dir/windows-$(basename $dir).exe"
+              hash_var="hash-$dir"
+              hash_val="${{ steps.hash.outputs[hash_var] }}"
+              output_file="build/$dir/windows-$(basename $dir).exe"
+              if [ ! -f "$output_file" ] || [ "$(cat "$output_file.sha")" != "$hash_val" ]; then
+                echo "Compiling $dir for Windows (MinGW)"
+                x86_64-w64-mingw32-g++ "$dir/main.cpp" -std=c++17 \
+                  -static -static-libgcc -static-libstdc++ \
+                  -o "$output_file"
+                echo "$hash_val" > "$output_file.sha"
+                built_files+=("$output_file")
+              else
+                echo "$dir is up-to-date, skipping Windows build."
+              fi
             fi
           done
+          echo "${built_files[@]}" > built_files.txt
         shell: bash
 
-      - name: Upload artifacts
+      - name: Upload newly built artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: binaries-${{ matrix.os }}
-          path: build/**/*
-          retention-days: 1
+          name: new-binaries-${{ matrix.os }}
+          path: built_files.txt
 
   release:
     needs: build
@@ -80,25 +120,51 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Download artifacts
+      - name: Download newly built artifacts
         uses: actions/download-artifact@v4
         with:
-          path: build
+          name: new-binaries-ubuntu-latest
+          path: build-new
 
       - name: Get date
         id: get_date
         run: echo "DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
 
-      - name: Pack executables
+      - name: Get previous release
+        id: prev_release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const releases = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 1
+            });
+            if (releases.data.length > 0) {
+              return releases.data[0].tag_name;
+            } else {
+              return '';
+            }
+          result-encoding: string
+
+      - name: Download previous release artifacts
+        if: steps.prev_release.outputs.result != ''
+        run: |
+          echo "Downloading old release binaries..."
+          mkdir -p old_release
+          gh release download "${{ steps.prev_release.outputs.result }}" -D old_release
+
+      - name: Pack release files
         run: |
           mkdir -p release
-          for os_dir in build/*; do
-            os_name=$(basename "$os_dir")
-            for dir in "$os_dir"/*; do
-              if [ -d "$dir" ]; then
-                zip -j "release/$(basename $dir)-$os_name.zip" "$dir"/*
-              fi
-            done
+          # merge old and new binaries
+          cp -r old_release/* release/ || true
+          cp -r build-new/* release/ || true
+          # pack each directory into zip (max compression)
+          for dir in release/*; do
+            if [ -d "$dir" ]; then
+              zip -9 -r "${dir}.zip" "$dir"
+            fi
           done
 
       - name: Create Release
