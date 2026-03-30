@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 3ESA
-    Descrizione: "20260327-3esa-Perciabosco-congettura-collatz"
+    Descrizione: "20260327-3esa-Perciabosco-congettura-collatz-ricorsivo"
 */
 
 #include <iostream>
