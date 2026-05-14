@@ -1,6 +1,6 @@
 /*
     Autore: Andrea Perciabosco
-    Classe: 2ESA
+    Classe: 3ESA
     Descrizione: "20260504-3esa-Perciabosco-Numeri-Particolari-function"
 */
 
