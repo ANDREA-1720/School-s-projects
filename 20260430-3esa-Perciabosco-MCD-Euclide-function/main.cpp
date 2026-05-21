@@ -1,7 +1,7 @@
 /*
     Autore: Andrea Perciabosco
     Classe: 3ESA
-    Descrizione: "20260430-classe-cognome-MCD-Euclide-function"
+    Descrizione: "20260430-3esa-Perciabosco-MCD-Euclide-function"
 */
 
 #include <iostream>
