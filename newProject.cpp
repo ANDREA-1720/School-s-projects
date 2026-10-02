@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <cctype>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -15,6 +16,31 @@ int main()
     cout << "Inserisci il nome del progetto: ";
     getline(cin, projectName);
 
+    // La classe si ricava dal nome della cartella, nel formato
+    // "data-classe-cognome-programma" (es. 20250924-3esa-Perciabosco-media)
+    string classroom = "2ESA";
+    bool classroomFound = false;
+    size_t firstDash = projectName.find('-');
+    if (firstDash != string::npos)
+    {
+        size_t secondDash = projectName.find('-', firstDash + 1);
+        if (secondDash != string::npos && secondDash > firstDash + 1)
+        {
+            classroom = projectName.substr(firstDash + 1, secondDash - firstDash - 1);
+            classroomFound = true;
+            // "3esa" -> "3ESA", come nel resto dei progetti
+            for (char &c : classroom)
+            {
+                c = toupper(static_cast<unsigned char>(c));
+            }
+        }
+    }
+    if (!classroomFound)
+    {
+        cerr << "Attenzione: nome del progetto non nel formato "
+                "'data-classe-cognome-programma', uso '" << classroom << "'" << endl;
+    }
+
     // Crea la cartella con il nome del progetto
     fs::create_directory(projectName);
 
@@ -27,7 +53,7 @@ int main()
     {
         mainFile << "/*\n";
         mainFile << "    Autore: Andrea Perciabosco\n";
-        mainFile << "    Classe: 2ESA\n";
+        mainFile << "    Classe: " << classroom << "\n";
         mainFile << "    Descrizione: \"" << projectName << "\"\n";
         mainFile << "*/\n\n";
         mainFile << "#include <iostream>\n";
@@ -57,7 +83,7 @@ int main()
     if (readmeFile.is_open())
     {
         readmeFile << "# Autore: Andrea Perciabosco\n";
-        readmeFile << "# Classe: 2ESA\n";
+        readmeFile << "# Classe: " << classroom << "\n";
         readmeFile << "# Descri: \"" << projectName << "\"\n";
 
         readmeFile.close();
