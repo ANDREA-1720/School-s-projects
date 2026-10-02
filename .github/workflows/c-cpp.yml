@@ -81,9 +81,9 @@ jobs:
 
           for prog in "${missing[@]}"; do
             gh release download "$TAG" \
-              --pattern "${prog}-binaries-${{ matrix.os }}.zip" \
+              --pattern "${prog}.zip" \
               --dir .cache/zips 2>/dev/null || true
-            zip_file=".cache/zips/${prog}-binaries-${{ matrix.os }}.zip"
+            zip_file=".cache/zips/${prog}.zip"
             if [ -f "$zip_file" ]; then
               unzip -p "$zip_file" metadata.sha512 > ".cache/prev_shas/$prog" 2>/dev/null && \
                 echo "Fetched SHA for: $prog" || true
@@ -264,17 +264,15 @@ jobs:
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
               prog=$(basename "$dir")
-              for os_name in binaries-ubuntu-latest binaries-macos-latest; do
-                zip_file=".cache/old_zips/${prog}-${os_name}.zip"
-                new_dir="build/$os_name/$prog"
-                if [ ! -d "$new_dir" ] && [ ! -f "$zip_file" ]; then
-                  echo "Fetching missing zip: ${prog}-${os_name}"
-                  gh release download "$TAG" \
-                    --pattern "${prog}-${os_name}.zip" \
-                    --dir .cache/old_zips 2>/dev/null || \
-                    echo "WARNING: No previous zip for ${prog}-${os_name}"
-                fi
-              done
+              if [ ! -d "build/binaries-ubuntu-latest/$prog" ] &&
+                 [ ! -d "build/binaries-macos-latest/$prog" ] &&
+                 [ ! -f ".cache/old_zips/${prog}.zip" ]; then
+                echo "Fetching previous zip: ${prog}"
+                gh release download "$TAG" \
+                  --pattern "${prog}.zip" \
+                  --dir .cache/old_zips 2>/dev/null || \
+                  echo "WARNING: No previous zip for ${prog}"
+              fi
             fi
           done
         shell: bash
@@ -282,30 +280,61 @@ jobs:
       - name: Assemble release zips
         run: |
           mkdir -p .cache/old_zips release
+          STAGE=$(mktemp -d)
+          trap 'rm -rf "$STAGE"' EXIT
+
+          # overlay a build dir into the staging folder (later dirs win)
+          overlay() {
+            [ -d "$1" ] || return 0
+            for f in "$1"/* ; do
+              [ -f "$f" ] && cp -f "$f" "$2/$(basename "$f")"
+            done
+            return 0
+          }
 
           for dir in */ ; do
             if [ -f "$dir/main.cpp" ]; then
               prog=$(basename "$dir")
-              for os_name in binaries-ubuntu-latest binaries-macos-latest; do
-                zip_out="release/${prog}-${os_name}.zip"
-                new_dir="build/$os_name/$prog"
+              out="release/${prog}.zip"
+              prev=".cache/old_zips/${prog}.zip"
+              linux_dir="build/binaries-ubuntu-latest/$prog"
+              mac_dir="build/binaries-macos-latest/$prog"
+              stage="$STAGE/$prog"
 
-                if [ -d "$new_dir" ]; then
-                  echo "[$prog / $os_name] Zipping new build"
-                  zip -9 -j "$zip_out" "$new_dir"/*
-                elif [ -f ".cache/old_zips/${prog}-${os_name}.zip" ]; then
-                  echo "[$prog / $os_name] Carrying forward cached zip"
-                  cp ".cache/old_zips/${prog}-${os_name}.zip" "$zip_out"
+              # nothing rebuilt for this program: reuse the cached zip as-is
+              if [ ! -d "$linux_dir" ] && [ ! -d "$mac_dir" ]; then
+                if [ -f "$prev" ]; then
+                  echo "[$prog] Cache hit - carrying forward previous zip"
+                  cp "$prev" "$out"
                 else
-                  echo "WARNING: [$prog / $os_name] No binary available — skipping"
+                  echo "WARNING: [$prog] No binary available - skipping"
                 fi
-              done
+                continue
+              fi
+
+              rm -rf "$stage" && mkdir -p "$stage"
+
+              # start from the previous release so cached OS variants survive
+              if [ -f "$prev" ]; then
+                unzip -q -o "$prev" -d "$stage"
+              fi
+
+              # fresh binaries overwrite the carried-forward ones
+              overlay "$mac_dir" "$stage"
+              overlay "$linux_dir" "$stage"
+
+              if [ -z "$(ls -A "$stage")" ]; then
+                echo "WARNING: [$prog] No binary available - skipping"
+              else
+                echo "[$prog] Zipping $(ls "$stage" | wc -l) files"
+                zip -9 -X -j -q "$out" "$stage"/*
+              fi
             fi
           done
         shell: bash
 
       - name: Update zips cache
-        run: cp -r release/*.zip .cache/old_zips
+        run: cp release/*.zip .cache/old_zips 2>/dev/null || true
         shell: bash
 
       - name: Save zips cache
